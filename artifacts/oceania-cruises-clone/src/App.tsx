@@ -50,6 +50,7 @@ function Home() {
   const [toast, setToast] = useState('');
   const [email, setEmail] = useState('');
   const [newsletterMessage, setNewsletterMessage] = useState('');
+  const [applicationMessage, setApplicationMessage] = useState('');
 
   const notify: ToastSetter = (message) => {
     setToast(message);
@@ -72,6 +73,17 @@ function Home() {
     }
     setNewsletterMessage('You’re on the list. A little inspiration is on its way.');
     setEmail('');
+  };
+
+  const handleApplication = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const applicantName = String(formData.get('fullName') ?? '').trim();
+    setApplicationMessage(
+      `Thank you${applicantName ? `, ${applicantName}` : ''}. Your application has been received for review.`,
+    );
+    form.reset();
   };
 
   return (
@@ -114,9 +126,17 @@ function Home() {
       </header>
 
       <nav className={`nav-bar ${menuOpen ? 'open' : ''}`} aria-label="Main navigation">
-        {['Plan your voyage', 'Destinations', 'Life onboard', 'Seasonal offers', 'Our point of view'].map((item) => (
+        {['Plan your voyage', 'Destinations', 'Life onboard', 'Seasonal offers', 'Our point of view', 'Careers'].map((item) => (
           <a
-            href={item === 'Destinations' ? '#destinations' : item === 'Seasonal offers' ? '#offers' : '#journal'}
+            href={
+              item === 'Destinations'
+                ? '#destinations'
+                : item === 'Seasonal offers'
+                  ? '#offers'
+                  : item === 'Careers'
+                    ? '#careers'
+                    : '#journal'
+            }
             className="nav-link"
             key={item}
             data-testid={`link-nav-${item.toLowerCase().replaceAll(' ', '-')}`}
@@ -277,6 +297,70 @@ function Home() {
             <button className="newsletter-submit" data-testid="button-newsletter-submit" type="submit">Keep me posted <ArrowRight size={14} /></button>
           </form>
           {newsletterMessage && <p className="newsletter-message" data-testid="text-newsletter-message">{newsletterMessage}</p>}
+        </section>
+
+        <section className="section careers-section" id="careers" aria-labelledby="careers-heading">
+          <div className="careers-intro">
+            <span className="section-kicker">A career with purpose</span>
+            <h2 id="careers-heading">Bring your curiosity aboard.</h2>
+            <p>
+              Great journeys are shaped by thoughtful people. Explore opportunities
+              across hospitality, culinary, guest experience, and life at sea.
+            </p>
+            <div className="role-list" aria-label="Open positions">
+              {[
+                { title: 'Guest Experience Host', team: 'Guest experience', location: 'At sea' },
+                { title: 'Executive Sous Chef', team: 'Culinary', location: 'At sea' },
+                { title: 'Voyage Planning Associate', team: 'Shore operations', location: 'Miami, FL' },
+              ].map((role) => (
+                <button
+                  className="role-card"
+                  type="button"
+                  key={role.title}
+                  onClick={() => notify(`${role.title} selected. Complete the application to be considered.`)}
+                >
+                  <span>
+                    <strong>{role.title}</strong>
+                    <small>{role.team} · {role.location}</small>
+                  </span>
+                  <ArrowRight size={16} aria-hidden="true" />
+                </button>
+              ))}
+            </div>
+          </div>
+          <form className="application-panel" onSubmit={handleApplication}>
+            <span className="section-kicker">Apply now</span>
+            <h3>Tell us about yourself.</h3>
+            <label>
+              <span>Full name</span>
+              <input name="fullName" type="text" placeholder="Your full name" required />
+            </label>
+            <label>
+              <span>Email address</span>
+              <input name="email" type="email" placeholder="you@example.com" required />
+            </label>
+            <label>
+              <span>Position</span>
+              <select name="position" defaultValue="" required>
+                <option value="" disabled>Select a position</option>
+                <option>Guest Experience Host</option>
+                <option>Executive Sous Chef</option>
+                <option>Voyage Planning Associate</option>
+              </select>
+            </label>
+            <label>
+              <span>Resume</span>
+              <input name="resume" type="file" accept=".pdf,.doc,.docx" required />
+            </label>
+            <label>
+              <span>Short note</span>
+              <textarea name="note" placeholder="What would you bring to the journey?" rows={3} />
+            </label>
+            <button className="brass-button application-submit" type="submit" data-testid="button-apply">
+              Submit application <ArrowRight size={14} />
+            </button>
+            {applicationMessage && <p className="application-message" role="status" data-testid="text-application-message">{applicationMessage}</p>}
+          </form>
         </section>
       </main>
 

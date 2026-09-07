@@ -208,6 +208,25 @@ a { color: inherit; text-decoration: none; }
 .newsletter-input::placeholder { color: #6e8587; }
 .newsletter-submit { border: 0; background: transparent; color: var(--navy); font: 11px var(--app-font-mono); letter-spacing: .1em; text-transform: uppercase; }
 .newsletter-message { grid-column: 2; margin-top: -33px; color: var(--navy); font-size: 12px; }
+.careers-section { display: grid; grid-template-columns: .9fr 1.1fr; gap: 80px; align-items: start; background: var(--white); }
+.careers-intro h2 { max-width: 430px; }
+.careers-intro > p { max-width: 430px; margin: 18px 0 30px; color: #63747a; font-size: 14px; line-height: 1.7; }
+.role-list { display: grid; gap: 10px; max-width: 490px; }
+.role-card { display: flex; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid #d8ddd7; padding: 17px 18px; background: transparent; color: var(--navy); text-align: left; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
+.role-card:hover { border-color: var(--brass); background: var(--stone); transform: translateX(3px); }
+.role-card strong, .role-card small { display: block; }
+.role-card strong { font: 17px var(--app-font-serif); font-weight: 400; }
+.role-card small { margin-top: 5px; color: #718084; font: 10px var(--app-font-mono); letter-spacing: .05em; text-transform: uppercase; }
+.application-panel { padding: 30px; background: var(--mist); }
+.application-panel h3 { margin: 9px 0 24px; color: var(--navy); font: 33px/1 var(--app-font-serif); font-weight: 400; }
+.application-panel label { display: block; margin-top: 17px; }
+.application-panel label > span { display: block; margin-bottom: 7px; color: #55717a; font: 10px var(--app-font-mono); letter-spacing: .08em; text-transform: uppercase; }
+.application-panel input, .application-panel select, .application-panel textarea { width: 100%; border: 0; border-bottom: 1px solid #aabdbc; border-radius: 0; outline: 0; padding: 10px 0; background: transparent; color: var(--navy); font-size: 13px; }
+.application-panel textarea { resize: vertical; }
+.application-panel input:focus, .application-panel select:focus, .application-panel textarea:focus { border-color: var(--brass); }
+.application-panel input[type="file"] { padding: 8px 0; font-size: 11px; }
+.application-submit { display: inline-flex; align-items: center; gap: 10px; margin-top: 25px; }
+.application-message { margin-top: 16px; color: var(--navy); font-size: 12px; line-height: 1.5; }
 .footer { background: var(--navy-deep); color: #d4dfdb; padding: 59px max(24px, calc((100vw - 1190px) / 2)) 28px; }
 .footer-top { display: grid; grid-template-columns: 1.6fr repeat(3, 1fr); gap: 35px; padding-bottom: 48px; border-bottom: 1px solid rgba(213,223,219,.18); }
 .footer-brand { color: var(--white); font: 29px var(--app-font-serif); }
@@ -258,6 +277,9 @@ a { color: inherit; text-decoration: none; }
   .newsletter { display: block; }
   .newsletter-form { min-width: 0; margin-top: 27px; }
   .newsletter-message { margin: 12px 0 0; }
+  .careers-section { display: block; }
+  .careers-intro > p { margin-bottom: 25px; }
+  .application-panel { margin-top: 45px; padding: 25px 21px; }
   .footer-top { grid-template-columns: 1fr 1fr; gap: 35px 20px; }
   .footer-brand { grid-column: span 2; }
   .footer-bottom { display: block; line-height: 1.7; }
