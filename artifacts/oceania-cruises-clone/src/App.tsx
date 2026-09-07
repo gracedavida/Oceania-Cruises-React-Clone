@@ -1,6 +1,7 @@
 import { type CSSProperties, type FormEvent, type ReactNode, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ArrowRight, Bell, ChevronDown, Menu, X } from 'lucide-react';
+import { submitCareerApplication, type CareerApplication } from '@workspace/api-client-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -12,6 +13,44 @@ const BASE_URL = import.meta.env.BASE_URL;
 const asset = (name: string) => `${BASE_URL}${name}`;
 
 type ToastSetter = (message: string) => void;
+const MAX_RESUME_SIZE = 8 * 1024 * 1024;
+
+function readFileAsBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : '';
+      const [, base64 = ''] = result.split(',', 2);
+      if (!base64) {
+        reject(new Error('Unable to read the resume.'));
+        return;
+      }
+      resolve(base64);
+    };
+    reader.onerror = () => reject(reader.error ?? new Error('Unable to read the resume.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function getResumeType(file: File): CareerApplication['resumeType'] | null {
+  const knownTypes: Record<string, CareerApplication['resumeType']> = {
+    'application/pdf': 'application/pdf',
+    'application/msword': 'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  };
+  if (file.type in knownTypes) {
+    return knownTypes[file.type];
+  }
+
+  const extension = file.name.split('.').pop()?.toLowerCase();
+  if (extension === 'pdf') return 'application/pdf';
+  if (extension === 'doc') return 'application/msword';
+  if (extension === 'docx') {
+    return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+  }
+  return null;
+}
 
 const offers = [
   {
@@ -51,6 +90,7 @@ function Home() {
   const [email, setEmail] = useState('');
   const [newsletterMessage, setNewsletterMessage] = useState('');
   const [applicationMessage, setApplicationMessage] = useState('');
+  const [applicationSending, setApplicationSending] = useState(false);
 
   const notify: ToastSetter = (message) => {
     setToast(message);
@@ -75,15 +115,54 @@ function Home() {
     setEmail('');
   };
 
-  const handleApplication = (event: FormEvent<HTMLFormElement>) => {
+  const handleApplication = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
     const applicantName = String(formData.get('fullName') ?? '').trim();
-    setApplicationMessage(
-      `Thank you${applicantName ? `, ${applicantName}` : ''}. Your application has been received for review.`,
-    );
-    form.reset();
+    const resume = formData.get('resume');
+
+    if (!(resume instanceof File) || resume.size === 0) {
+      setApplicationMessage('Please attach a PDF, DOC, or DOCX resume.');
+      return;
+    }
+    if (resume.size > MAX_RESUME_SIZE) {
+      setApplicationMessage('Please keep your resume under 8 MB.');
+      return;
+    }
+
+    const resumeType = getResumeType(resume);
+    if (!resumeType) {
+      setApplicationMessage('Please attach a PDF, DOC, or DOCX resume.');
+      return;
+    }
+
+    setApplicationSending(true);
+    setApplicationMessage('Sending your application securely…');
+
+    try {
+      const application: CareerApplication = {
+        fullName: applicantName,
+        email: String(formData.get('email') ?? '').trim(),
+        position: String(formData.get('position') ?? '').trim(),
+        note: String(formData.get('note') ?? '').trim(),
+        resumeName: resume.name,
+        resumeType,
+        resumeData: await readFileAsBase64(resume),
+        resumeSize: resume.size,
+      };
+      await submitCareerApplication(application);
+      setApplicationMessage(
+        `Thank you${applicantName ? `, ${applicantName}` : ''}. Your application was emailed for review.`,
+      );
+      form.reset();
+    } catch {
+      setApplicationMessage(
+        'We could not send your application right now. Please try again shortly.',
+      );
+    } finally {
+      setApplicationSending(false);
+    }
   };
 
   return (
@@ -356,8 +435,8 @@ function Home() {
               <span>Short note</span>
               <textarea name="note" placeholder="What would you bring to the journey?" rows={3} />
             </label>
-            <button className="brass-button application-submit" type="submit" data-testid="button-apply">
-              Submit application <ArrowRight size={14} />
+            <button className="brass-button application-submit" type="submit" disabled={applicationSending} data-testid="button-apply">
+              {applicationSending ? 'Sending application…' : 'Submit application'} <ArrowRight size={14} />
             </button>
             {applicationMessage && <p className="application-message" role="status" data-testid="text-application-message">{applicationMessage}</p>}
           </form>

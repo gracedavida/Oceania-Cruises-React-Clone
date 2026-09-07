@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: careers
+    description: Career application operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /careers/applications:
+    post:
+      operationId: submitCareerApplication
+      tags: [careers]
+      summary: Submit a career application
+      description: Sends a career application and resume to the configured hiring inbox.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CareerApplication"
+      responses:
+        "200":
+          description: Application email sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CareerApplicationResponse"
+        "400":
+          description: Invalid application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: Email delivery failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +66,67 @@ components:
           type: string
       required:
         - status
+    CareerApplication:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 1
+          maxLength: 120
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        position:
+          type: string
+          minLength: 1
+          maxLength: 120
+        note:
+          type: string
+          maxLength: 4000
+        resumeName:
+          type: string
+          minLength: 1
+          maxLength: 180
+        resumeType:
+          type: string
+          enum:
+            - application/pdf
+            - application/msword
+            - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+        resumeData:
+          type: string
+          minLength: 1
+          maxLength: 12000000
+        resumeSize:
+          type: integer
+          minimum: 1
+          maximum: 8388608
+      required:
+        - fullName
+        - email
+        - position
+        - resumeName
+        - resumeType
+        - resumeData
+        - resumeSize
+    CareerApplicationResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - sent
+        message:
+          type: string
+      required:
+        - status
+        - message
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
 
