@@ -108,8 +108,8 @@ function Home() {
           {menuOpen ? <X size={22} strokeWidth={1.25} /> : <Menu size={22} strokeWidth={1.25} />}
         </button>
         <a href="#top" className="wordmark" data-testid="link-home">
-          <span className="wordmark-main"><span className="wordmark-mark">⌁</span>Aurelia</span>
-          <span className="wordmark-sub">Ocean Voyages</span>
+          <span className="wordmark-main"><span className="wordmark-mark">⌁</span>Oceania</span>
+          <span className="wordmark-sub">Cruises</span>
         </a>
       </header>
 
@@ -174,7 +174,7 @@ function Home() {
 
         <section className="hero" aria-label="Featured voyage">
           <div className="hero-content reveal">
-            <span className="eyebrow">Aurelia, in season · September to November</span>
+            <span className="eyebrow">Oceania, in season · September to November</span>
             <h1>Go where the light is.</h1>
             <p className="hero-copy">
               Intimate ships. Unhurried days. A considered way to see the coastlines that stay with you.
@@ -203,7 +203,7 @@ function Home() {
                 className="offer-card"
                 key={offer.id}
                 data-testid={`card-offer-${offer.id}`}
-                onClick={() => notify(`${offer.title} is part of the Aurelia seasonal edit.`)}
+                onClick={() => notify(`${offer.title} is part of the Oceania seasonal edit.`)}
               >
                 <img className="offer-image" src={asset(offer.image)} alt="" />
                 <div className="offer-content">
@@ -248,7 +248,7 @@ function Home() {
 
         <section className="section quote-section" id="journal">
           <div>
-            <span className="section-kicker">Aurelia point of view</span>
+            <span className="section-kicker">Oceania point of view</span>
             <h2>Room to notice.</h2>
           </div>
           <div>
@@ -282,13 +282,13 @@ function Home() {
 
       <footer className="footer">
         <div className="footer-top">
-          <div className="footer-brand">Aurelia<small>A fictional, educational recreation inspired by the language of luxury travel. Not affiliated with any cruise line.</small></div>
+          <div className="footer-brand">Oceania Cruises<small>A fictional, educational recreation inspired by the language of luxury travel. Not affiliated with any cruise line.</small></div>
           <FooterColumn title="Plan" links={['Find a voyage', 'Our ships', 'What to pack', 'Travel notes']} onLink={notify} />
           <FooterColumn title="Explore" links={['Destinations', 'Life onboard', 'The journal', 'Seasonal offers']} onLink={notify} />
           <FooterColumn title="Connect" links={['Guest access', 'Newsletter', 'Contact the studio', 'Privacy']} onLink={notify} />
         </div>
         <div className="footer-bottom">
-          <span>© 2025 Aurelia Ocean Voyages · Educational recreation</span>
+          <span>© 2025 Oceania Cruises · Educational recreation</span>
           <span>Designed for curious travelers</span>
         </div>
       </footer>
