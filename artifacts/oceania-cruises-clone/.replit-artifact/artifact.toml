@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Oceania Cruises React Clone"
+description = "An educational React and TypeScript recreation of a luxury cruise homepage, built as a responsive visual reference with polished navigation, destination browsing, cruise discovery, and inquiry interactions."
+version = "1.0.0"
+id = "artifacts/oceania-cruises-clone"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19198
+
+[services.development]
+run = "pnpm --filter @workspace/oceania-cruises-clone run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/oceania-cruises-clone", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/oceania-cruises-clone/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19198"
+BASE_PATH = "/"
