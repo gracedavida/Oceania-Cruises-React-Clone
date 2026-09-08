@@ -283,7 +283,7 @@ const roles: Role[] = [
 const teamOptions = ['All teams', 'Hotel & guest service', 'Food & beverage', 'Marine deck & engineering'];
 
 const navItems = [
-  { label: 'Careers', href: '#open-roles' },
+  { label: 'Careers', href: '#apply-now' },
   { label: 'Open roles', href: '#open-roles' },
   { label: 'Life at sea', href: '#life-at-sea' },
   { label: 'Shore teams', href: '#shore-teams' },
@@ -353,6 +353,10 @@ function Home() {
   const [toast, setToast] = useState('');
   const [formStatus, setFormStatus] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState(() =>
+    typeof window !== 'undefined' ? window.localStorage.getItem('oceania-careers-submitted-email') ?? '' : '',
+  );
+  const [applicationSubmitted, setApplicationSubmitted] = useState(false);
 
   const activeRole = roles.find((role) => role.id === activeRoleId) ?? roles[0];
   const filteredRoles = useMemo(() => {
@@ -387,12 +391,21 @@ function Home() {
 
   const handleApplication = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (applicationSubmitted) {
+      setFormStatus('Only one application can be submitted from this form.');
+      return;
+    }
     const form = event.currentTarget;
     const formData = new FormData(form);
     const firstName = String(formData.get('firstName') ?? '').trim();
     const lastName = String(formData.get('lastName') ?? '').trim();
     const middleName = String(formData.get('middleName') ?? '').trim();
     const name = [firstName, middleName, lastName].filter(Boolean).join(' ');
+    const email = String(formData.get('email') ?? '').trim();
+    if (submittedEmail && submittedEmail === email.toLowerCase()) {
+      setFormStatus('Only one application can be submitted from this email address.');
+      return;
+    }
     const resume = formData.get('resume');
     if (resume instanceof File && resume.size > MAX_RESUME_SIZE) {
       setFormStatus('Please keep your resume under 8 MB.');
@@ -422,7 +435,7 @@ function Home() {
       );
       const application: CareerApplication = {
         fullName: name,
-        email: String(formData.get('email') ?? '').trim(),
+        email,
         position: activeRole.title,
         phone: String(formData.get('phone') ?? '').trim(),
         note: String(formData.get('note') ?? '').trim(),
@@ -436,6 +449,9 @@ function Home() {
       };
       await submitCareerApplication(application);
       setFormStatus(`Thank you${name ? `, ${name}` : ''}. Your application was emailed for review.`);
+      setApplicationSubmitted(true);
+      setSubmittedEmail(email.toLowerCase());
+      window.localStorage.setItem('oceania-careers-submitted-email', email.toLowerCase());
       form.reset();
     } catch {
       setFormStatus('We could not send your application right now. Please try again shortly.');
@@ -490,8 +506,8 @@ function Home() {
               Bring your point of view to a team that believes hospitality is a way of paying attention — to guests, to craft, and to one another.
             </p>
             <div className="cf-hero-actions">
-              <button className="cf-primary" type="button" onClick={() => scrollTo('open-roles')}>
-                View {roles.length} open roles <ArrowRight size={14} />
+              <button className="cf-primary" type="button" onClick={() => scrollTo('apply-now')}>
+                Apply now <ArrowRight size={14} />
               </button>
               <button className="cf-secondary" type="button" onClick={() => scrollTo('life-at-sea')}>
                 Meet the people
@@ -622,19 +638,25 @@ function Home() {
             <div className="cf-apply-detail"><span className="cf-detail-number">02</span><span className="cf-detail-copy"><strong>Meet your future team</strong><span>We make space for a real conversation.</span></span></div>
           </div>
           <form className="cf-apply-form" onSubmit={handleApplication}>
-            <span className="cf-kicker">Apply now</span>
-            <h3>Put your name in the room.</h3>
-            <p className="cf-form-note">First name, last name, position, email, and phone are required. Every other question is optional.</p>
+            <div className="cf-application-heading">
+              <div className="cf-application-logo" aria-label="Oceania Cruises">
+                <span className="cf-wordmark-main">Oceania</span>
+                <span className="cf-wordmark-sub">Cruises</span>
+              </div>
+              <span className="cf-kicker">Careers</span>
+              <h3>Application for Employment</h3>
+            </div>
 
+            <fieldset className="cf-form-fieldset" disabled={submitting || applicationSubmitted}>
             <div className="cf-form-section">
               <h4>Personal information</h4>
               <div className="cf-form-grid">
-                <label className="cf-form-field"><span>First name *</span><input name="firstName" type="text" placeholder="First name" required /></label>
-                <label className="cf-form-field"><span>Last name *</span><input name="lastName" type="text" placeholder="Last name" required /></label>
+                <label className="cf-form-field"><span>First name</span><input name="firstName" type="text" placeholder="First name" required /></label>
+                <label className="cf-form-field"><span>Last name</span><input name="lastName" type="text" placeholder="Last name" required /></label>
                 <label className="cf-form-field"><span>Middle name</span><input name="middleName" type="text" placeholder="Middle name" /></label>
-                <label className="cf-form-field"><span>Position applying for *</span><select name="position" value={activeRole.id} onChange={(event) => setActiveRoleId(event.target.value)} required>{roles.map((role) => <option value={role.id} key={role.id}>{role.title}</option>)}</select></label>
-                <label className="cf-form-field"><span>Email address *</span><input name="email" type="email" placeholder="you@example.com" required /></label>
-                <label className="cf-form-field"><span>Phone number *</span><input name="phone" type="tel" placeholder="+1 555 000 0000" required /></label>
+                <label className="cf-form-field"><span>Position applying for</span><select name="position" value={activeRole.id} onChange={(event) => setActiveRoleId(event.target.value)} required>{roles.map((role) => <option value={role.id} key={role.id}>{role.title}</option>)}</select></label>
+                <label className="cf-form-field"><span>Email address</span><input name="email" type="email" placeholder="you@example.com" required /></label>
+                <label className="cf-form-field"><span>Phone number</span><input name="phone" type="tel" placeholder="+1 555 000 0000" required /></label>
                 <label className="cf-form-field"><span>Gender</span><input name="gender" type="text" placeholder="Optional" /></label>
                 <label className="cf-form-field"><span>Date of birth</span><input name="dateOfBirth" type="date" /></label>
                 <label className="cf-form-field"><span>Place of birth</span><input name="placeOfBirth" type="text" /></label>
@@ -721,7 +743,8 @@ function Home() {
               <label className="cf-checkbox-row"><input name="truthfulness" type="checkbox" /><span>I confirm that the information I provide is complete and accurate.</span></label>
             </div>
 
-            <button className="cf-primary cf-submit" type="submit" disabled={submitting} data-testid="button-apply">{submitting ? 'Sending application…' : 'Send my application'} <ArrowRight size={14} /></button>
+            <button className="cf-primary cf-submit" type="submit" disabled={submitting || applicationSubmitted} data-testid="button-apply">{submitting ? 'Sending application…' : applicationSubmitted ? 'Application submitted' : 'Send my application'} <ArrowRight size={14} /></button>
+            </fieldset>
             {formStatus && <p className="cf-form-status" role="status" data-testid="text-application-message">{formStatus}</p>}
           </form>
         </section>

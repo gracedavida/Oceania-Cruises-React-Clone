@@ -6,12 +6,22 @@ import {
 import { sendCareerApplication } from "../lib/gmail";
 
 const router: IRouter = Router();
+const processingEmails = new Set<string>();
+const submittedEmails = new Set<string>();
 
 router.post("/careers/applications", async (req, res): Promise<void> => {
   const parsed = SubmitCareerApplicationBody.safeParse(req.body);
   if (!parsed.success) {
     req.log.warn({ errors: parsed.error.flatten() }, "Invalid career application");
     res.status(400).json({ error: "Please check the application details and resume." });
+    return;
+  }
+
+  const normalizedEmail = parsed.data.email.trim().toLowerCase();
+  if (processingEmails.has(normalizedEmail) || submittedEmails.has(normalizedEmail)) {
+    res.status(409).json({
+      error: "An application from this email address has already been submitted.",
+    });
     return;
   }
 
@@ -35,8 +45,10 @@ router.post("/careers/applications", async (req, res): Promise<void> => {
     }
   }
 
+  processingEmails.add(normalizedEmail);
   try {
     await sendCareerApplication(parsed.data);
+    submittedEmails.add(normalizedEmail);
     res.json(
       SubmitCareerApplicationResponse.parse({
         status: "sent",
@@ -48,6 +60,8 @@ router.post("/careers/applications", async (req, res): Promise<void> => {
     res.status(502).json({
       error: "We could not send the application email. Please try again shortly.",
     });
+  } finally {
+    processingEmails.delete(normalizedEmail);
   }
 });
 
