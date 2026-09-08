@@ -15,10 +15,24 @@ router.post("/careers/applications", async (req, res): Promise<void> => {
     return;
   }
 
-  const decodedResume = Buffer.from(parsed.data.resumeData, "base64");
-  if (decodedResume.length !== parsed.data.resumeSize) {
-    res.status(400).json({ error: "The resume upload was incomplete. Please try again." });
+  const resumeFields = [
+    parsed.data.resumeName,
+    parsed.data.resumeType,
+    parsed.data.resumeData,
+    parsed.data.resumeSize,
+  ];
+  const hasAnyResumeField = resumeFields.some((field) => field !== undefined);
+  const hasCompleteResume = resumeFields.every((field) => field !== undefined);
+  if (hasAnyResumeField && !hasCompleteResume) {
+    res.status(400).json({ error: "Please upload a complete resume file or leave the resume blank." });
     return;
+  }
+  if (hasCompleteResume) {
+    const decodedResume = Buffer.from(parsed.data.resumeData!, "base64");
+    if (decodedResume.length !== parsed.data.resumeSize) {
+      res.status(400).json({ error: "The resume upload was incomplete. Please try again." });
+      return;
+    }
   }
 
   try {

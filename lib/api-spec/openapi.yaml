@@ -81,12 +81,18 @@ components:
           type: string
           minLength: 1
           maxLength: 120
+        phone:
+          type: string
+          minLength: 1
+          maxLength: 40
         note:
           type: string
           maxLength: 4000
+        applicationDetails:
+          type: string
+          maxLength: 30000
         resumeName:
           type: string
-          minLength: 1
           maxLength: 180
         resumeType:
           type: string
@@ -106,10 +112,7 @@ components:
         - fullName
         - email
         - position
-        - resumeName
-        - resumeType
-        - resumeData
-        - resumeSize
+        - phone
     CareerApplicationResponse:
       type: object
       properties:

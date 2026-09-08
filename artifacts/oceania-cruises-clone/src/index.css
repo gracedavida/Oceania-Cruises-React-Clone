@@ -474,6 +474,10 @@ a { color: inherit; text-decoration: none; }
 .cf-detail-copy span { display: block; margin-top: 4px; color: #61797b; font-size: 11px; }
 .cf-apply-form { padding: 30px; background: var(--white); }
 .cf-apply-form h3 { margin: 9px 0 22px; color: var(--navy); font: 34px/1 var(--app-font-serif); font-weight: 400; }
+.cf-form-note { margin: -8px 0 24px; color: #61797b; font-size: 12px; line-height: 1.55; }
+.cf-form-section { margin-top: 30px; padding-top: 24px; border-top: 1px solid #d5ddd6; }
+.cf-form-section h4 { margin: 0 0 18px; color: var(--navy); font: 22px/1 var(--app-font-serif); font-weight: 400; }
+.cf-form-section > p { max-width: 700px; margin: 0 0 18px; color: #61797b; font-size: 11px; line-height: 1.65; }
 .cf-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
 .cf-form-field { display: block; }
 .cf-form-field.full { grid-column: 1 / -1; }
@@ -482,6 +486,10 @@ a { color: inherit; text-decoration: none; }
 .cf-form-field input[type="file"] { padding: 8px 0; font-size: 11px; }
 .cf-form-field textarea { min-height: 70px; resize: vertical; }
 .cf-form-field input:focus, .cf-form-field select:focus, .cf-form-field textarea:focus { border-color: var(--brass); }
+.cf-checkbox-row { display: flex; align-items: flex-start; gap: 10px; min-height: 30px; padding-top: 5px; color: #557078; font-size: 11px; line-height: 1.45; }
+.cf-checkbox-row input { width: 14px; height: 14px; flex: 0 0 auto; margin-top: 1px; accent-color: var(--brass); }
+.cf-checkbox-row span { display: block; margin: 0; color: inherit; font: inherit; letter-spacing: normal; text-transform: none; }
+.cf-acknowledgement { margin-top: 34px; background: #f7f2e9; padding: 22px; border-top: 2px solid var(--brass); }
 .cf-submit { margin-top: 26px; }
 .cf-form-status { margin: 14px 0 0; color: var(--navy); font-size: 12px; line-height: 1.5; }
 .cf-footer { padding: 54px max(24px, calc((100vw - 1240px) / 2)) 25px; background: var(--navy-deep); color: #ccd9d5; }
@@ -551,6 +559,7 @@ a { color: inherit; text-decoration: none; }
   .cf-quote-text { font-size: 25px; }
   .cf-form-grid { grid-template-columns: 1fr; }
   .cf-form-field.full { grid-column: auto; }
+  .cf-checkbox-row { min-height: 36px; }
   .cf-apply-form { padding: 24px 19px; }
   .cf-footer-top { grid-template-columns: 1fr 1fr; gap: 31px 20px; }
   .cf-footer-brand { grid-column: 1 / -1; }

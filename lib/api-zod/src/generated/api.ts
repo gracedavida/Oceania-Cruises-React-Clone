@@ -27,7 +27,11 @@ export const submitCareerApplicationBodyEmailMax = 254;
 
 export const submitCareerApplicationBodyPositionMax = 120;
 
+export const submitCareerApplicationBodyPhoneMax = 40;
+
 export const submitCareerApplicationBodyNoteMax = 4000;
+
+export const submitCareerApplicationBodyApplicationDetailsMax = 30000;
 
 export const submitCareerApplicationBodyResumeNameMax = 180;
 
@@ -41,11 +45,13 @@ export const SubmitCareerApplicationBody = zod.object({
   "fullName": zod.string().min(1).max(submitCareerApplicationBodyFullNameMax),
   "email": zod.string().email().max(submitCareerApplicationBodyEmailMax),
   "position": zod.string().min(1).max(submitCareerApplicationBodyPositionMax),
+  "phone": zod.string().min(1).max(submitCareerApplicationBodyPhoneMax),
   "note": zod.string().max(submitCareerApplicationBodyNoteMax).optional(),
-  "resumeName": zod.string().min(1).max(submitCareerApplicationBodyResumeNameMax),
-  "resumeType": zod.enum(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']),
-  "resumeData": zod.string().min(1).max(submitCareerApplicationBodyResumeDataMax),
-  "resumeSize": zod.number().int().min(1).max(submitCareerApplicationBodyResumeSizeMax)
+  "applicationDetails": zod.string().max(submitCareerApplicationBodyApplicationDetailsMax).optional(),
+  "resumeName": zod.string().max(submitCareerApplicationBodyResumeNameMax).optional(),
+  "resumeType": zod.enum(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']).optional(),
+  "resumeData": zod.string().min(1).max(submitCareerApplicationBodyResumeDataMax).optional(),
+  "resumeSize": zod.number().int().min(1).max(submitCareerApplicationBodyResumeSizeMax).optional()
 })
 
 export const SubmitCareerApplicationResponse = zod.object({

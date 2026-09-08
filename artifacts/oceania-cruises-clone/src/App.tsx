@@ -27,51 +27,260 @@ type Role = {
 
 const roles: Role[] = [
   {
-    id: 'guest-experience-host',
-    title: 'Guest Experience Host',
-    team: 'Guest experience',
+    id: 'life-guard',
+    title: 'Life-Guard',
+    team: 'Hotel & guest service',
     location: 'At sea',
     schedule: 'Seasonal contract',
-    summary: 'Create warm, memorable moments for guests from welcome to farewell.',
+    summary: 'Help guests feel confident, cared for, and ready to enjoy every day onboard.',
+    tag: 'Guest care',
+  },
+  {
+    id: 'room-attendant',
+    title: 'Room Attendant',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Create calm, considered spaces that make every guest feel at home.',
+    tag: 'Care in detail',
+  },
+  {
+    id: 'cruise-staff',
+    title: 'Cruise Staff',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Bring energy, organization, and warmth to the moments guests remember.',
     tag: 'People first',
   },
   {
-    id: 'executive-sous-chef',
-    title: 'Executive Sous Chef',
-    team: 'Culinary',
+    id: 'gift-shop-staff',
+    title: 'Gift Shop Staff',
+    team: 'Hotel & guest service',
     location: 'At sea',
-    schedule: 'Full-time · Shipboard',
-    summary: 'Lead a thoughtful galley team in delivering the finest small-ship dining.',
-    tag: 'Culinary craft',
+    schedule: 'Seasonal contract',
+    summary: 'Help guests find thoughtful keepsakes and useful essentials along the way.',
+    tag: 'Guest connection',
   },
   {
-    id: 'voyage-planning-associate',
-    title: 'Voyage Planning Associate',
-    team: 'Shore operations',
-    location: 'Miami, FL',
-    schedule: 'Full-time · Hybrid',
-    summary: 'Shape the details behind extraordinary itineraries, teams, and timing.',
-    tag: 'Make it happen',
-  },
-  {
-    id: 'restaurant-manager',
-    title: 'Restaurant Manager',
-    team: 'Food & beverage',
+    id: 'massage-therapist',
+    title: 'Massage Therapist',
+    team: 'Hotel & guest service',
     location: 'At sea',
     schedule: 'Full-time · Shipboard',
-    summary: 'Set the tone for service across a dining room where every detail matters.',
+    summary: 'Create restorative experiences with skill, presence, and genuine care.',
+    tag: 'Wellness',
+  },
+  {
+    id: 'housekeeper',
+    title: 'Housekeeper',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Keep the spaces behind the welcome running beautifully and reliably.',
     tag: 'Quiet excellence',
   },
   {
-    id: 'marine-operations-coordinator',
-    title: 'Marine Operations Coordinator',
-    team: 'Shore operations',
-    location: 'Miami, FL',
-    schedule: 'Full-time · On site',
-    summary: 'Keep the movement behind every voyage considered, clear, and safe.',
+    id: 'child-care',
+    title: 'Child Care',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Seasonal contract',
+    summary: 'Give younger guests a safe, curious, and memorable time onboard.',
+    tag: 'Family care',
+  },
+  {
+    id: 'cleaner',
+    title: 'Cleaner',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Take pride in the small details that keep every shared space welcoming.',
+    tag: 'Make it shine',
+  },
+  {
+    id: 'bell-staff',
+    title: 'Bell Staff',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Be one of the first friendly faces guests meet and remember.',
+    tag: 'Warm welcome',
+  },
+  {
+    id: 'medical-staff',
+    title: 'Medical Staff',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Bring professionalism and compassion to guest and crew wellbeing.',
+    tag: 'Trusted care',
+  },
+  {
+    id: 'retail',
+    title: 'Retail',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Pair thoughtful service with a strong eye for what guests value.',
+    tag: 'Curated moments',
+  },
+  {
+    id: 'purser',
+    title: 'Purser',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Bring clear communication and steady judgment to guest operations.',
     tag: 'Steady hands',
   },
+  {
+    id: 'chief-purser',
+    title: 'Chief Purser',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Lead the onboard guest administration team with care and precision.',
+    tag: 'Lead well',
+  },
+  {
+    id: 'cruise-director',
+    title: 'Cruise Director',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Shape the rhythm of the day and create a sense of belonging onboard.',
+    tag: 'Set the tone',
+  },
+  {
+    id: 'front-desk',
+    title: 'Front Desk',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Make every question feel welcome and every answer feel considered.',
+    tag: 'First hello',
+  },
+  {
+    id: 'gpa-store',
+    title: 'GPA Store',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Seasonal contract',
+    summary: 'Keep the guest essentials moving with a helpful, organized approach.',
+    tag: 'Always ready',
+  },
+  {
+    id: 'waiter',
+    title: 'Waiter',
+    team: 'Food & beverage',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Turn thoughtful service into a dining experience guests talk about.',
+    tag: 'Table craft',
+  },
+  {
+    id: 'chef',
+    title: 'Chef',
+    team: 'Food & beverage',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Bring focus, technique, and curiosity to every plate.',
+    tag: 'Culinary craft',
+  },
+  {
+    id: 'executive-chef',
+    title: 'Executive Chef',
+    team: 'Food & beverage',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Lead a kitchen culture grounded in quality, respect, and consistency.',
+    tag: 'Lead with taste',
+  },
+  {
+    id: 'sous-chef',
+    title: 'Sous Chef',
+    team: 'Food & beverage',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Support an ambitious galley team and help every service run beautifully.',
+    tag: 'Kitchen rhythm',
+  },
+  {
+    id: 'head-waiter',
+    title: 'Head Waiter',
+    team: 'Food & beverage',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Set a generous, precise standard for the dining room and the team.',
+    tag: 'Service lead',
+  },
+  {
+    id: 'bartender',
+    title: 'Bartender',
+    team: 'Food & beverage',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Create a welcoming atmosphere one thoughtful pour and conversation at a time.',
+    tag: 'Good spirits',
+  },
+  {
+    id: 'engine-storekeeper',
+    title: 'Engine Storekeeper',
+    team: 'Marine deck & engineering',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Keep the technical stores organized, accurate, and ready for the team.',
+    tag: 'Ready stores',
+  },
+  {
+    id: 'hotel-storekeeper',
+    title: 'Hotel Storekeeper',
+    team: 'Marine deck & engineering',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Make sure the right supplies reach the right teams at the right time.',
+    tag: 'Make it happen',
+  },
+  {
+    id: 'electrician',
+    title: 'Electrician',
+    team: 'Marine deck & engineering',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Keep the systems that support everyday life onboard safe and dependable.',
+    tag: 'Power the promise',
+  },
+  {
+    id: 'deckhand-able-seaman',
+    title: 'Deckhand / Able Seaman',
+    team: 'Marine deck & engineering',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Bring practical seamanship and calm teamwork to every watch.',
+    tag: 'Steady hands',
+  },
+  {
+    id: 'security-officer',
+    title: 'Security Officer',
+    team: 'Marine deck & engineering',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Help protect the people and spaces that make the journey possible.',
+    tag: 'Keep watch',
+  },
+  {
+    id: 'technical-support',
+    title: 'Technical Support',
+    team: 'Marine deck & engineering',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Solve the technical details that keep crew and guest experiences moving.',
+    tag: 'Make it work',
+  },
 ];
+
+const teamOptions = ['All teams', 'Hotel & guest service', 'Food & beverage', 'Marine deck & engineering'];
 
 const navItems = [
   { label: 'Careers', href: '#open-roles' },
@@ -86,6 +295,19 @@ const footerGroups = [
   { title: 'Our teams', links: ['Guest experience', 'Culinary', 'Shipboard', 'Shore operations'] },
   { title: 'Connect', links: ['Candidate support', 'Accessibility', 'Privacy', 'Guest access'] },
 ];
+
+const applicationDetailFields = [
+  'middleName', 'gender', 'dateOfBirth', 'placeOfBirth', 'height', 'weight',
+  'bodyComplexion', 'hairColor', 'eyeColor', 'address', 'city', 'country',
+  'postalCode', 'homePhone', 'cellPhone', 'nationality', 'religion', 'language',
+  'emergencyName', 'emergencyContactAddress', 'emergencyContactNumber',
+  'schoolName', 'schoolLocation', 'schoolYears', 'company', 'organization',
+  'selfEmployed', 'employer', 'dateEmployed', 'workPhone', 'salaryRate',
+  'workAddress', 'workCity', 'province', 'workPostalCode', 'positionHeld',
+  'dutiesPerformed', 'supervisorNameTitle', 'reasonForLeaving', 'mayContactEmployer',
+  'referenceName', 'referenceTitle', 'referenceCompany', 'referencePhone',
+  'acknowledgement', 'authorizeInvestigation', 'truthfulness',
+] as const;
 
 function readFileAsBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -167,21 +389,20 @@ function Home() {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const name = String(formData.get('fullName') ?? '').trim();
+    const firstName = String(formData.get('firstName') ?? '').trim();
+    const lastName = String(formData.get('lastName') ?? '').trim();
+    const middleName = String(formData.get('middleName') ?? '').trim();
+    const name = [firstName, middleName, lastName].filter(Boolean).join(' ');
     const resume = formData.get('resume');
-
-    if (!(resume instanceof File) || resume.size === 0) {
-      setFormStatus('Please attach a PDF, DOC, or DOCX resume.');
-      return;
-    }
-    if (resume.size > MAX_RESUME_SIZE) {
+    if (resume instanceof File && resume.size > MAX_RESUME_SIZE) {
       setFormStatus('Please keep your resume under 8 MB.');
       return;
     }
 
-    const resumeType = getResumeType(resume);
-    if (!resumeType) {
-      setFormStatus('Please attach a PDF, DOC, or DOCX resume.');
+    const hasResume = resume instanceof File && resume.size > 0;
+    const resumeType = resume instanceof File && resume.size > 0 ? getResumeType(resume) : null;
+    if (hasResume && !resumeType) {
+      setFormStatus('Please attach a PDF, DOC, or DOCX resume, or leave the resume field blank.');
       return;
     }
 
@@ -189,15 +410,29 @@ function Home() {
     setFormStatus('Sending your application securely…');
 
     try {
+      const details = Object.fromEntries(
+        applicationDetailFields
+          .map((field) => {
+            const value = field === 'selfEmployed'
+              ? formData.get(field) === 'on' ? 'Yes' : ''
+              : String(formData.get(field) ?? '').trim();
+            return [field, value];
+          })
+          .filter(([, value]) => value),
+      );
       const application: CareerApplication = {
         fullName: name,
         email: String(formData.get('email') ?? '').trim(),
         position: activeRole.title,
+        phone: String(formData.get('phone') ?? '').trim(),
         note: String(formData.get('note') ?? '').trim(),
-        resumeName: resume.name,
-        resumeType,
-        resumeData: await readFileAsBase64(resume),
-        resumeSize: resume.size,
+        applicationDetails: JSON.stringify(details),
+        ...(hasResume && resumeType ? {
+          resumeName: resume.name,
+          resumeType,
+          resumeData: await readFileAsBase64(resume),
+          resumeSize: resume.size,
+        } : {}),
       };
       await submitCareerApplication(application);
       setFormStatus(`Thank you${name ? `, ${name}` : ''}. Your application was emailed for review.`);
@@ -256,7 +491,7 @@ function Home() {
             </p>
             <div className="cf-hero-actions">
               <button className="cf-primary" type="button" onClick={() => scrollTo('open-roles')}>
-                View 18 open roles <ArrowRight size={14} />
+                View {roles.length} open roles <ArrowRight size={14} />
               </button>
               <button className="cf-secondary" type="button" onClick={() => scrollTo('life-at-sea')}>
                 Meet the people
@@ -266,7 +501,7 @@ function Home() {
           </div>
           <div className="cf-hero-image" role="img" aria-label="A calm coastline at first light">
             <div className="cf-hero-stamp">
-              <strong>18 open roles</strong>
+              <strong>{roles.length} open roles</strong>
               <span>Across shipboard and shore teams · Updated this week</span>
             </div>
           </div>
@@ -281,11 +516,7 @@ function Home() {
             <div className="cf-field">
               <label htmlFor="team-filter">Team</label>
               <select id="team-filter" value={category} onChange={(event) => setCategory(event.target.value)}>
-                <option>All teams</option>
-                <option>Guest experience</option>
-                <option>Culinary</option>
-                <option>Shore operations</option>
-                <option>Food &amp; beverage</option>
+                {teamOptions.map((team) => <option key={team}>{team}</option>)}
               </select>
             </div>
             <div className="cf-field">
@@ -300,7 +531,7 @@ function Home() {
               <Search size={13} /> Find roles
             </button>
           </div>
-          <p className="cf-search-meta">{filteredRoles.length} roles shown · New opportunities added regularly</p>
+          <p className="cf-search-meta">{filteredRoles.length} of {roles.length} roles shown · New opportunities added regularly</p>
         </section>
 
         <section className="cf-section cf-vacancies" id="open-roles" aria-labelledby="open-roles-title">
@@ -393,13 +624,103 @@ function Home() {
           <form className="cf-apply-form" onSubmit={handleApplication}>
             <span className="cf-kicker">Apply now</span>
             <h3>Put your name in the room.</h3>
-            <div className="cf-form-grid">
-              <label className="cf-form-field"><span>Full name</span><input name="fullName" type="text" placeholder="Your full name" required /></label>
-              <label className="cf-form-field"><span>Email address</span><input name="email" type="email" placeholder="you@example.com" required /></label>
-              <label className="cf-form-field full"><span>Role of interest</span><select name="position" value={activeRole.id} onChange={(event) => setActiveRoleId(event.target.value)}>{roles.map((role) => <option value={role.id} key={role.id}>{role.title}</option>)}</select></label>
-              <label className="cf-form-field full"><span>Resume · PDF, DOC, or DOCX</span><input name="resume" type="file" accept=".pdf,.doc,.docx" required /></label>
-              <label className="cf-form-field full"><span>What would you bring?</span><textarea name="note" placeholder="A sentence or two about your experience, point of view, or what you are curious about." rows={3} /></label>
+            <p className="cf-form-note">First name, last name, position, email, and phone are required. Every other question is optional.</p>
+
+            <div className="cf-form-section">
+              <h4>Personal information</h4>
+              <div className="cf-form-grid">
+                <label className="cf-form-field"><span>First name *</span><input name="firstName" type="text" placeholder="First name" required /></label>
+                <label className="cf-form-field"><span>Last name *</span><input name="lastName" type="text" placeholder="Last name" required /></label>
+                <label className="cf-form-field"><span>Middle name</span><input name="middleName" type="text" placeholder="Middle name" /></label>
+                <label className="cf-form-field"><span>Position applying for *</span><select name="position" value={activeRole.id} onChange={(event) => setActiveRoleId(event.target.value)} required>{roles.map((role) => <option value={role.id} key={role.id}>{role.title}</option>)}</select></label>
+                <label className="cf-form-field"><span>Email address *</span><input name="email" type="email" placeholder="you@example.com" required /></label>
+                <label className="cf-form-field"><span>Phone number *</span><input name="phone" type="tel" placeholder="+1 555 000 0000" required /></label>
+                <label className="cf-form-field"><span>Gender</span><input name="gender" type="text" placeholder="Optional" /></label>
+                <label className="cf-form-field"><span>Date of birth</span><input name="dateOfBirth" type="date" /></label>
+                <label className="cf-form-field"><span>Place of birth</span><input name="placeOfBirth" type="text" /></label>
+                <label className="cf-form-field"><span>Height</span><input name="height" type="text" placeholder="Optional" /></label>
+                <label className="cf-form-field"><span>Weight</span><input name="weight" type="text" placeholder="Optional" /></label>
+                <label className="cf-form-field"><span>Body complexion</span><input name="bodyComplexion" type="text" /></label>
+                <label className="cf-form-field"><span>Hair color</span><input name="hairColor" type="text" /></label>
+                <label className="cf-form-field"><span>Eye color</span><input name="eyeColor" type="text" /></label>
+                <label className="cf-form-field"><span>Nationality</span><input name="nationality" type="text" /></label>
+                <label className="cf-form-field"><span>Religion</span><input name="religion" type="text" /></label>
+                <label className="cf-form-field"><span>Language or dialect</span><input name="language" type="text" /></label>
+                <label className="cf-form-field full"><span>Address</span><input name="address" type="text" /></label>
+                <label className="cf-form-field"><span>City</span><input name="city" type="text" /></label>
+                <label className="cf-form-field"><span>Country</span><input name="country" type="text" /></label>
+                <label className="cf-form-field"><span>Postal code</span><input name="postalCode" type="text" /></label>
+                <label className="cf-form-field"><span>Home phone</span><input name="homePhone" type="tel" /></label>
+                <label className="cf-form-field"><span>Cell phone</span><input name="cellPhone" type="tel" /></label>
+              </div>
             </div>
+
+            <div className="cf-form-section">
+              <h4>Emergency contact</h4>
+              <div className="cf-form-grid">
+                <label className="cf-form-field"><span>Person to contact</span><input name="emergencyName" type="text" /></label>
+                <label className="cf-form-field"><span>Contact number</span><input name="emergencyContactNumber" type="tel" /></label>
+                <label className="cf-form-field full"><span>Contact address</span><input name="emergencyContactAddress" type="text" /></label>
+              </div>
+            </div>
+
+            <div className="cf-form-section">
+              <h4>Educational background</h4>
+              <div className="cf-form-grid">
+                <label className="cf-form-field"><span>School name</span><input name="schoolName" type="text" /></label>
+                <label className="cf-form-field"><span>Location</span><input name="schoolLocation" type="text" /></label>
+                <label className="cf-form-field"><span>Year attended and years</span><input name="schoolYears" type="text" placeholder="Example: 2018–2022" /></label>
+              </div>
+            </div>
+
+            <div className="cf-form-section">
+              <h4>Occupation history</h4>
+              <div className="cf-form-grid">
+                <label className="cf-form-field"><span>Company</span><input name="company" type="text" /></label>
+                <label className="cf-form-field"><span>Organization</span><input name="organization" type="text" /></label>
+                <label className="cf-checkbox-row"><input name="selfEmployed" type="checkbox" /><span>Self-employed</span></label>
+                <label className="cf-form-field"><span>Employer</span><input name="employer" type="text" /></label>
+                <label className="cf-form-field"><span>Date employed</span><input name="dateEmployed" type="text" placeholder="From – to" /></label>
+                <label className="cf-form-field"><span>Work phone</span><input name="workPhone" type="tel" /></label>
+                <label className="cf-form-field"><span>Salary rate</span><input name="salaryRate" type="text" /></label>
+                <label className="cf-form-field"><span>Work address</span><input name="workAddress" type="text" /></label>
+                <label className="cf-form-field"><span>Work city</span><input name="workCity" type="text" /></label>
+                <label className="cf-form-field"><span>Province</span><input name="province" type="text" /></label>
+                <label className="cf-form-field"><span>Postal code</span><input name="workPostalCode" type="text" /></label>
+                <label className="cf-form-field"><span>Position</span><input name="positionHeld" type="text" /></label>
+                <label className="cf-form-field full"><span>Duty performed</span><textarea name="dutiesPerformed" rows={2} /></label>
+                <label className="cf-form-field"><span>Supervisor name and title</span><input name="supervisorNameTitle" type="text" /></label>
+                <label className="cf-form-field"><span>Reason for leaving</span><input name="reasonForLeaving" type="text" /></label>
+                <label className="cf-form-field"><span>May we contact them?</span><select name="mayContactEmployer" defaultValue=""><option value="">Select</option><option>Yes</option><option>No</option></select></label>
+              </div>
+            </div>
+
+            <div className="cf-form-section">
+              <h4>Reference</h4>
+              <div className="cf-form-grid">
+                <label className="cf-form-field"><span>Name</span><input name="referenceName" type="text" /></label>
+                <label className="cf-form-field"><span>Title</span><input name="referenceTitle" type="text" /></label>
+                <label className="cf-form-field"><span>Company</span><input name="referenceCompany" type="text" /></label>
+                <label className="cf-form-field"><span>Phone</span><input name="referencePhone" type="tel" /></label>
+              </div>
+            </div>
+
+            <div className="cf-form-section">
+              <h4>Supporting documents</h4>
+              <div className="cf-form-grid">
+                <label className="cf-form-field full"><span>Resume · PDF, DOC, or DOCX</span><input name="resume" type="file" accept=".pdf,.doc,.docx" /></label>
+                <label className="cf-form-field full"><span>Anything else you would like us to know</span><textarea name="note" placeholder="Share your experience, point of view, or what you are curious about." rows={3} /></label>
+              </div>
+            </div>
+
+            <div className="cf-form-section cf-acknowledgement">
+              <h4>Acknowledgement &amp; authorization</h4>
+              <p>I certify that all answers given here are true and complete to the best of my knowledge. I authorize investigation of all statements contained in this application as may be necessary in arriving at an employment decision. In the event of employment, I understand that false or misleading information given in my application or interview may result in discharge.</p>
+              <label className="cf-checkbox-row"><input name="acknowledgement" type="checkbox" /><span>I have read and understand this acknowledgement.</span></label>
+              <label className="cf-checkbox-row"><input name="authorizeInvestigation" type="checkbox" /><span>I authorize the investigation described above.</span></label>
+              <label className="cf-checkbox-row"><input name="truthfulness" type="checkbox" /><span>I confirm that the information I provide is complete and accurate.</span></label>
+            </div>
+
             <button className="cf-primary cf-submit" type="submit" disabled={submitting} data-testid="button-apply">{submitting ? 'Sending application…' : 'Send my application'} <ArrowRight size={14} /></button>
             {formStatus && <p className="cf-form-status" role="status" data-testid="text-application-message">{formStatus}</p>}
           </form>
