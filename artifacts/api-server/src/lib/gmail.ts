@@ -26,16 +26,33 @@ function buildApplicationMessage(
   const boundary = `----=_OceaniaApplication_${crypto.randomUUID()}`;
   const safeName = sanitizeHeaderValue(application.fullName);
   const safePosition = sanitizeHeaderValue(application.position);
-  const safeResumeName = sanitizeHeaderValue(application.resumeName);
+  const safeResumeName = application.resumeName
+    ? sanitizeHeaderValue(application.resumeName)
+    : "";
+  let additionalDetails = "(No additional application details provided)";
+  if (application.applicationDetails?.trim()) {
+    try {
+      const parsedDetails = JSON.parse(application.applicationDetails) as Record<string, string>;
+      additionalDetails = Object.entries(parsedDetails)
+        .map(([label, value]) => `${label}: ${value}`)
+        .join("\r\n");
+    } catch {
+      additionalDetails = application.applicationDetails.trim();
+    }
+  }
   const body = [
     "A new career application was submitted through the Oceania Cruises educational recreation.",
     "",
     `Applicant: ${application.fullName}`,
     `Email: ${application.email}`,
+    `Phone: ${application.phone}`,
     `Position: ${application.position}`,
     "",
     "Applicant note:",
     application.note?.trim() || "(No note provided)",
+    "",
+    "Additional application details:",
+    additionalDetails,
   ].join("\r\n");
 
   const headers = [
@@ -44,28 +61,38 @@ function buildApplicationMessage(
     `Reply-To: ${sanitizeHeaderValue(application.email)}`,
     `Subject: New application — ${safePosition} — ${safeName}`,
     "MIME-Version: 1.0",
-    `Content-Type: multipart/mixed; boundary="${boundary}"`,
-  ].join("\r\n");
+  ];
 
-  const attachment = [
-    `--${boundary}`,
-    "Content-Type: text/plain; charset=UTF-8",
-    "Content-Transfer-Encoding: 8bit",
-    "",
-    body,
-    "",
-    `--${boundary}`,
-    `Content-Type: ${application.resumeType}; name="${safeResumeName}"`,
-    "Content-Transfer-Encoding: base64",
-    `Content-Disposition: attachment; filename="${safeResumeName}"`,
-    "",
-    wrapBase64(application.resumeData),
-    "",
-    `--${boundary}--`,
-    "",
-  ].join("\r\n");
+  if (
+    application.resumeName &&
+    application.resumeType &&
+    application.resumeData &&
+    application.resumeSize
+  ) {
+    headers.push(`Content-Type: multipart/mixed; boundary="${boundary}"`);
+    const message = [
+      `--${boundary}`,
+      "Content-Type: text/plain; charset=UTF-8",
+      "Content-Transfer-Encoding: 8bit",
+      "",
+      body,
+      "",
+      `--${boundary}`,
+      `Content-Type: ${application.resumeType}; name="${safeResumeName}"`,
+      "Content-Transfer-Encoding: base64",
+      `Content-Disposition: attachment; filename="${safeResumeName}"`,
+      "",
+      wrapBase64(application.resumeData),
+      "",
+      `--${boundary}--`,
+      "",
+    ].join("\r\n");
+    return `${headers.join("\r\n")}\r\n\r\n${message}`;
+  }
 
-  return `${headers}\r\n\r\n${attachment}`;
+  headers.push("Content-Type: text/plain; charset=UTF-8");
+  headers.push("Content-Transfer-Encoding: 8bit");
+  return `${headers.join("\r\n")}\r\n\r\n${body}\r\n`;
 }
 
 export async function sendCareerApplication(

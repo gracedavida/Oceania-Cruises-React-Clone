@@ -31,24 +31,28 @@ export interface CareerApplication {
      * @maxLength 120
      */
   position: string;
-  /** @maxLength 4000 */
-  note?: string;
   /**
      * @minLength 1
-     * @maxLength 180
+     * @maxLength 40
      */
-  resumeName: string;
-  resumeType: CareerApplicationResumeType;
+  phone: string;
+  /** @maxLength 4000 */
+  note?: string;
+  /** @maxLength 30000 */
+  applicationDetails?: string;
+  /** @maxLength 180 */
+  resumeName?: string;
+  resumeType?: CareerApplicationResumeType;
   /**
      * @minLength 1
      * @maxLength 12000000
      */
-  resumeData: string;
+  resumeData?: string;
   /**
      * @minimum 1
      * @maximum 8388608
      */
-  resumeSize: number;
+  resumeSize?: number;
 }
 
 export type CareerApplicationResponseStatus = typeof CareerApplicationResponseStatus[keyof typeof CareerApplicationResponseStatus];

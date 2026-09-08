@@ -1,6 +1,6 @@
-import { type CSSProperties, type FormEvent, type ReactNode, useState } from 'react';
+import { type FormEvent, type ReactNode, useMemo, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ArrowRight, Bell, ChevronDown, Menu, X } from 'lucide-react';
+import { ArrowRight, BriefcaseBusiness, Check, Menu, Search, X } from 'lucide-react';
 import { submitCareerApplication, type CareerApplication } from '@workspace/api-client-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -11,9 +11,303 @@ import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 const queryClient = new QueryClient();
 const BASE_URL = import.meta.env.BASE_URL;
 const asset = (name: string) => `${BASE_URL}${name}`;
+const MAX_RESUME_SIZE = 8 * 1024 * 1024;
 
 type ToastSetter = (message: string) => void;
-const MAX_RESUME_SIZE = 8 * 1024 * 1024;
+
+type Role = {
+  id: string;
+  title: string;
+  team: string;
+  location: string;
+  schedule: string;
+  summary: string;
+  tag: string;
+};
+
+const roles: Role[] = [
+  {
+    id: 'life-guard',
+    title: 'Life-Guard',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Seasonal contract',
+    summary: 'Help guests feel confident, cared for, and ready to enjoy every day onboard.',
+    tag: 'Guest care',
+  },
+  {
+    id: 'room-attendant',
+    title: 'Room Attendant',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Create calm, considered spaces that make every guest feel at home.',
+    tag: 'Care in detail',
+  },
+  {
+    id: 'cruise-staff',
+    title: 'Cruise Staff',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Bring energy, organization, and warmth to the moments guests remember.',
+    tag: 'People first',
+  },
+  {
+    id: 'gift-shop-staff',
+    title: 'Gift Shop Staff',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Seasonal contract',
+    summary: 'Help guests find thoughtful keepsakes and useful essentials along the way.',
+    tag: 'Guest connection',
+  },
+  {
+    id: 'massage-therapist',
+    title: 'Massage Therapist',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Create restorative experiences with skill, presence, and genuine care.',
+    tag: 'Wellness',
+  },
+  {
+    id: 'housekeeper',
+    title: 'Housekeeper',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Keep the spaces behind the welcome running beautifully and reliably.',
+    tag: 'Quiet excellence',
+  },
+  {
+    id: 'child-care',
+    title: 'Child Care',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Seasonal contract',
+    summary: 'Give younger guests a safe, curious, and memorable time onboard.',
+    tag: 'Family care',
+  },
+  {
+    id: 'cleaner',
+    title: 'Cleaner',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Take pride in the small details that keep every shared space welcoming.',
+    tag: 'Make it shine',
+  },
+  {
+    id: 'bell-staff',
+    title: 'Bell Staff',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Be one of the first friendly faces guests meet and remember.',
+    tag: 'Warm welcome',
+  },
+  {
+    id: 'medical-staff',
+    title: 'Medical Staff',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Bring professionalism and compassion to guest and crew wellbeing.',
+    tag: 'Trusted care',
+  },
+  {
+    id: 'retail',
+    title: 'Retail',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Pair thoughtful service with a strong eye for what guests value.',
+    tag: 'Curated moments',
+  },
+  {
+    id: 'purser',
+    title: 'Purser',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Bring clear communication and steady judgment to guest operations.',
+    tag: 'Steady hands',
+  },
+  {
+    id: 'chief-purser',
+    title: 'Chief Purser',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Lead the onboard guest administration team with care and precision.',
+    tag: 'Lead well',
+  },
+  {
+    id: 'cruise-director',
+    title: 'Cruise Director',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Shape the rhythm of the day and create a sense of belonging onboard.',
+    tag: 'Set the tone',
+  },
+  {
+    id: 'front-desk',
+    title: 'Front Desk',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Make every question feel welcome and every answer feel considered.',
+    tag: 'First hello',
+  },
+  {
+    id: 'gpa-store',
+    title: 'GPA Store',
+    team: 'Hotel & guest service',
+    location: 'At sea',
+    schedule: 'Seasonal contract',
+    summary: 'Keep the guest essentials moving with a helpful, organized approach.',
+    tag: 'Always ready',
+  },
+  {
+    id: 'waiter',
+    title: 'Waiter',
+    team: 'Food & beverage',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Turn thoughtful service into a dining experience guests talk about.',
+    tag: 'Table craft',
+  },
+  {
+    id: 'chef',
+    title: 'Chef',
+    team: 'Food & beverage',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Bring focus, technique, and curiosity to every plate.',
+    tag: 'Culinary craft',
+  },
+  {
+    id: 'executive-chef',
+    title: 'Executive Chef',
+    team: 'Food & beverage',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Lead a kitchen culture grounded in quality, respect, and consistency.',
+    tag: 'Lead with taste',
+  },
+  {
+    id: 'sous-chef',
+    title: 'Sous Chef',
+    team: 'Food & beverage',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Support an ambitious galley team and help every service run beautifully.',
+    tag: 'Kitchen rhythm',
+  },
+  {
+    id: 'head-waiter',
+    title: 'Head Waiter',
+    team: 'Food & beverage',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Set a generous, precise standard for the dining room and the team.',
+    tag: 'Service lead',
+  },
+  {
+    id: 'bartender',
+    title: 'Bartender',
+    team: 'Food & beverage',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Create a welcoming atmosphere one thoughtful pour and conversation at a time.',
+    tag: 'Good spirits',
+  },
+  {
+    id: 'engine-storekeeper',
+    title: 'Engine Storekeeper',
+    team: 'Marine deck & engineering',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Keep the technical stores organized, accurate, and ready for the team.',
+    tag: 'Ready stores',
+  },
+  {
+    id: 'hotel-storekeeper',
+    title: 'Hotel Storekeeper',
+    team: 'Marine deck & engineering',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Make sure the right supplies reach the right teams at the right time.',
+    tag: 'Make it happen',
+  },
+  {
+    id: 'electrician',
+    title: 'Electrician',
+    team: 'Marine deck & engineering',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Keep the systems that support everyday life onboard safe and dependable.',
+    tag: 'Power the promise',
+  },
+  {
+    id: 'deckhand-able-seaman',
+    title: 'Deckhand / Able Seaman',
+    team: 'Marine deck & engineering',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Bring practical seamanship and calm teamwork to every watch.',
+    tag: 'Steady hands',
+  },
+  {
+    id: 'security-officer',
+    title: 'Security Officer',
+    team: 'Marine deck & engineering',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Help protect the people and spaces that make the journey possible.',
+    tag: 'Keep watch',
+  },
+  {
+    id: 'technical-support',
+    title: 'Technical Support',
+    team: 'Marine deck & engineering',
+    location: 'At sea',
+    schedule: 'Full-time · Shipboard',
+    summary: 'Solve the technical details that keep crew and guest experiences moving.',
+    tag: 'Make it work',
+  },
+];
+
+const teamOptions = ['All teams', 'Hotel & guest service', 'Food & beverage', 'Marine deck & engineering'];
+
+const navItems = [
+  { label: 'Careers', href: '#apply-now' },
+  { label: 'Open roles', href: '#open-roles' },
+  { label: 'Life at sea', href: '#life-at-sea' },
+  { label: 'Shore teams', href: '#shore-teams' },
+  { label: 'Our values', href: '#our-values' },
+];
+
+const footerGroups = [
+  { title: 'For candidates', links: ['Open roles', 'Life at sea', 'How we hire', 'Benefits'] },
+  { title: 'Our teams', links: ['Guest experience', 'Culinary', 'Shipboard', 'Shore operations'] },
+  { title: 'Connect', links: ['Candidate support', 'Accessibility', 'Privacy', 'Guest access'] },
+];
+
+const applicationDetailFields = [
+  'middleName', 'gender', 'dateOfBirth', 'placeOfBirth', 'height', 'weight',
+  'bodyComplexion', 'hairColor', 'eyeColor', 'address', 'city', 'country',
+  'postalCode', 'homePhone', 'cellPhone', 'nationality', 'religion', 'language',
+  'emergencyName', 'emergencyContactAddress', 'emergencyContactNumber',
+  'schoolName', 'schoolLocation', 'schoolYears', 'company', 'organization',
+  'selfEmployed', 'employer', 'dateEmployed', 'workPhone', 'salaryRate',
+  'workAddress', 'workCity', 'province', 'workPostalCode', 'positionHeld',
+  'dutiesPerformed', 'supervisorNameTitle', 'reasonForLeaving', 'mayContactEmployer',
+  'referenceName', 'referenceTitle', 'referenceCompany', 'referencePhone',
+  'acknowledgement', 'authorizeInvestigation', 'truthfulness',
+] as const;
 
 function readFileAsBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -39,9 +333,7 @@ function getResumeType(file: File): CareerApplication['resumeType'] | null {
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   };
-  if (file.type in knownTypes) {
-    return knownTypes[file.type];
-  }
+  if (file.type in knownTypes) return knownTypes[file.type];
 
   const extension = file.name.split('.').pop()?.toLowerCase();
   if (extension === 'pdf') return 'application/pdf';
@@ -52,423 +344,426 @@ function getResumeType(file: File): CareerApplication['resumeType'] | null {
   return null;
 }
 
-const offers = [
-  {
-    id: 'coastal-edit',
-    label: 'The seasonal edit',
-    title: 'The coast, considered',
-    body: 'Sunlit harbors, old stone, and days that ask nothing of you.',
-    image: 'hero-coast.jpg',
-  },
-  {
-    id: 'grand-voyage',
-    label: 'Longer stays',
-    title: 'Take the long way',
-    body: 'A slower rhythm across three distinct seas.',
-    image: 'destination-nordic.jpg',
-  },
-  {
-    id: 'culinary',
-    label: 'At the table',
-    title: 'A taste of place',
-    body: 'Markets, kitchens, and the stories between them.',
-    image: 'destination-greece.jpg',
-  },
-];
-
-const destinations = [
-  { id: 'japan', region: 'Asia & the Pacific', title: 'Japan in bloom', image: 'destination-japan.jpg' },
-  { id: 'nordic', region: 'Northern Europe', title: 'Fjords in soft light', image: 'destination-nordic.jpg' },
-  { id: 'aegean', region: 'The Mediterranean', title: 'Aegean blue', image: 'destination-greece.jpg' },
-];
-
 function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [destination, setDestination] = useState('Everywhere');
-  const [month, setMonth] = useState('Any month');
+  const [activeRoleId, setActiveRoleId] = useState(roles[0].id);
+  const [keyword, setKeyword] = useState('');
+  const [category, setCategory] = useState('All teams');
+  const [location, setLocation] = useState('All locations');
   const [toast, setToast] = useState('');
-  const [email, setEmail] = useState('');
-  const [newsletterMessage, setNewsletterMessage] = useState('');
-  const [applicationMessage, setApplicationMessage] = useState('');
-  const [applicationSending, setApplicationSending] = useState(false);
+  const [formStatus, setFormStatus] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState(() =>
+    typeof window !== 'undefined' ? window.localStorage.getItem('oceania-careers-submitted-email') ?? '' : '',
+  );
+  const [applicationSubmitted, setApplicationSubmitted] = useState(false);
+
+  const activeRole = roles.find((role) => role.id === activeRoleId) ?? roles[0];
+  const filteredRoles = useMemo(() => {
+    const term = keyword.trim().toLowerCase();
+    return roles.filter((role) => {
+      const matchesTerm = !term || `${role.title} ${role.team} ${role.location}`.toLowerCase().includes(term);
+      const matchesCategory = category === 'All teams' || role.team === category;
+      const matchesLocation = location === 'All locations' || role.location === location;
+      return matchesTerm && matchesCategory && matchesLocation;
+    });
+  }, [category, keyword, location]);
 
   const notify: ToastSetter = (message) => {
     setToast(message);
     window.setTimeout(() => setToast(''), 3200);
   };
 
-  const handleFind = () => {
-    notify(
-      destination === 'Everywhere' && month === 'Any month'
-        ? 'Showing our full collection of voyages.'
-        : `Curating voyages to ${destination} for ${month.toLowerCase()}.`,
-    );
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setMenuOpen(false);
   };
 
-  const handleNewsletter = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!email.includes('@')) {
-      setNewsletterMessage('Please enter a valid email address.');
-      return;
-    }
-    setNewsletterMessage('You’re on the list. A little inspiration is on its way.');
-    setEmail('');
+  const selectRole = (role: Role) => {
+    setActiveRoleId(role.id);
+    notify(`${role.title} is selected for your application.`);
+  };
+
+  const handleSearch = () => {
+    scrollTo('open-roles');
+    notify(filteredRoles.length ? `${filteredRoles.length} open roles match your search.` : 'No roles match those filters yet.');
   };
 
   const handleApplication = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (applicationSubmitted) {
+      setFormStatus('Only one application can be submitted from this form.');
+      return;
+    }
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const applicantName = String(formData.get('fullName') ?? '').trim();
+    const firstName = String(formData.get('firstName') ?? '').trim();
+    const lastName = String(formData.get('lastName') ?? '').trim();
+    const middleName = String(formData.get('middleName') ?? '').trim();
+    const name = [firstName, middleName, lastName].filter(Boolean).join(' ');
+    const email = String(formData.get('email') ?? '').trim();
+    if (submittedEmail && submittedEmail === email.toLowerCase()) {
+      setFormStatus('Only one application can be submitted from this email address.');
+      return;
+    }
     const resume = formData.get('resume');
-
-    if (!(resume instanceof File) || resume.size === 0) {
-      setApplicationMessage('Please attach a PDF, DOC, or DOCX resume.');
-      return;
-    }
-    if (resume.size > MAX_RESUME_SIZE) {
-      setApplicationMessage('Please keep your resume under 8 MB.');
+    if (resume instanceof File && resume.size > MAX_RESUME_SIZE) {
+      setFormStatus('Please keep your resume under 8 MB.');
       return;
     }
 
-    const resumeType = getResumeType(resume);
-    if (!resumeType) {
-      setApplicationMessage('Please attach a PDF, DOC, or DOCX resume.');
+    const hasResume = resume instanceof File && resume.size > 0;
+    const resumeType = resume instanceof File && resume.size > 0 ? getResumeType(resume) : null;
+    if (hasResume && !resumeType) {
+      setFormStatus('Please attach a PDF, DOC, or DOCX resume, or leave the resume field blank.');
       return;
     }
 
-    setApplicationSending(true);
-    setApplicationMessage('Sending your application securely…');
+    setSubmitting(true);
+    setFormStatus('Sending your application securely…');
 
     try {
+      const details = Object.fromEntries(
+        applicationDetailFields
+          .map((field) => {
+            const value = field === 'selfEmployed'
+              ? formData.get(field) === 'on' ? 'Yes' : ''
+              : String(formData.get(field) ?? '').trim();
+            return [field, value];
+          })
+          .filter(([, value]) => value),
+      );
       const application: CareerApplication = {
-        fullName: applicantName,
-        email: String(formData.get('email') ?? '').trim(),
-        position: String(formData.get('position') ?? '').trim(),
+        fullName: name,
+        email,
+        position: activeRole.title,
+        phone: String(formData.get('phone') ?? '').trim(),
         note: String(formData.get('note') ?? '').trim(),
-        resumeName: resume.name,
-        resumeType,
-        resumeData: await readFileAsBase64(resume),
-        resumeSize: resume.size,
+        applicationDetails: JSON.stringify(details),
+        ...(hasResume && resumeType ? {
+          resumeName: resume.name,
+          resumeType,
+          resumeData: await readFileAsBase64(resume),
+          resumeSize: resume.size,
+        } : {}),
       };
       await submitCareerApplication(application);
-      setApplicationMessage(
-        `Thank you${applicantName ? `, ${applicantName}` : ''}. Your application was emailed for review.`,
-      );
+      setFormStatus(`Thank you${name ? `, ${name}` : ''}. Your application was emailed for review.`);
+      setApplicationSubmitted(true);
+      setSubmittedEmail(email.toLowerCase());
+      window.localStorage.setItem('oceania-careers-submitted-email', email.toLowerCase());
       form.reset();
     } catch {
-      setApplicationMessage(
-        'We could not send your application right now. Please try again shortly.',
-      );
+      setFormStatus('We could not send your application right now. Please try again shortly.');
     } finally {
-      setApplicationSending(false);
+      setSubmitting(false);
     }
   };
 
   return (
-    <div
-      className="page-shell"
-      style={
-        {
-          '--hero-image': `url("${asset('hero-coast.jpg')}")`,
-        } as CSSProperties
-      }
-    >
-      <div className="utility-bar">
-        <span className="utility-link">An independent educational recreation</span>
-        <div className="utility-right">
-          <span>Voyage notes, sent slowly</span>
-          <button
-            className="utility-link"
-            data-testid="button-sign-in"
-            onClick={() => notify('Guest access is for this presentation only.')}
-          >
-            Guest access
+    <div className="careers-first min-h-screen">
+      <div className="cf-utility">
+        <strong>An independent educational recreation</strong>
+        <div className="cf-utility-right">
+          <span>Careers, considered</span>
+          <button className="cf-utility-link" type="button" onClick={() => notify('Candidate access is for this presentation only.')}>
+            Candidate access
           </button>
-          <Bell size={12} strokeWidth={1.5} aria-hidden="true" />
         </div>
       </div>
 
-      <header className="wordmark-header">
+      <header className="cf-brand-row">
         <button
-          className="menu-toggle"
+          className="cf-menu-button"
+          type="button"
           aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
-          data-testid="button-mobile-menu"
+          aria-expanded={menuOpen}
           onClick={() => setMenuOpen((open) => !open)}
         >
-          {menuOpen ? <X size={22} strokeWidth={1.25} /> : <Menu size={22} strokeWidth={1.25} />}
+          {menuOpen ? <X size={21} strokeWidth={1.25} /> : <Menu size={21} strokeWidth={1.25} />}
         </button>
-        <a href="#top" className="wordmark" data-testid="link-home">
-          <span className="wordmark-main"><span className="wordmark-mark">⌁</span>Oceania</span>
-          <span className="wordmark-sub">Cruises</span>
+        <a className="cf-wordmark" href="#top" aria-label="Oceania Cruises careers home">
+          <span className="cf-wordmark-main">Oceania</span>
+          <span className="cf-wordmark-sub">Cruises</span>
+          <span className="cf-wordmark-detail">Careers destination</span>
         </a>
       </header>
 
-      <nav className={`nav-bar ${menuOpen ? 'open' : ''}`} aria-label="Main navigation">
-        {['Plan your voyage', 'Destinations', 'Life onboard', 'Seasonal offers', 'Our point of view', 'Careers'].map((item) => (
-          <a
-            href={
-              item === 'Destinations'
-                ? '#destinations'
-                : item === 'Seasonal offers'
-                  ? '#offers'
-                  : item === 'Careers'
-                    ? '#careers'
-                    : '#journal'
-            }
-            className="nav-link"
-            key={item}
-            data-testid={`link-nav-${item.toLowerCase().replaceAll(' ', '-')}`}
-            onClick={() => setMenuOpen(false)}
-          >
-            {item}
+      <nav className={`cf-nav ${menuOpen ? 'is-open' : ''}`} aria-label="Careers navigation">
+        {navItems.map((item) => (
+          <a className="cf-nav-link" href={item.href} key={item.label} onClick={() => setMenuOpen(false)}>
+            {item.label}
           </a>
         ))}
       </nav>
 
       <main id="top">
-        <section className="finder" aria-label="Find a voyage">
-          <div className="finder-inner">
-            <label>
-              <span className="field-label">Where would you like to go?</span>
-              <select
-                className="field-select"
-                value={destination}
-                data-testid="select-destination"
-                onChange={(event) => setDestination(event.target.value)}
-              >
-                <option>Everywhere</option>
-                <option>The Mediterranean</option>
-                <option>Asia &amp; the Pacific</option>
-                <option>Northern Europe</option>
-                <option>Alaska &amp; the Americas</option>
-              </select>
-            </label>
-            <label>
-              <span className="field-label">When would you like to go?</span>
-              <select
-                className="field-select"
-                value={month}
-                data-testid="select-month"
-                onChange={(event) => setMonth(event.target.value)}
-              >
-                <option>Any month</option>
-                <option>April 2026</option>
-                <option>May 2026</option>
-                <option>June 2026</option>
-                <option>September 2026</option>
-                <option>October 2026</option>
-              </select>
-            </label>
-            <div>
-              <button className="find-button" data-testid="button-find-cruise" onClick={handleFind}>
-                Find a voyage
-              </button>
-              <button className="advanced-search" data-testid="button-advanced-search" onClick={() => notify('Advanced planning opens after your first selection.')}>
-                Advanced search
-              </button>
-            </div>
-          </div>
-        </section>
-
-        <section className="hero" aria-label="Featured voyage">
-          <div className="hero-content reveal">
-            <span className="eyebrow">Oceania, in season · September to November</span>
-            <h1>Go where the light is.</h1>
-            <p className="hero-copy">
-              Intimate ships. Unhurried days. A considered way to see the coastlines that stay with you.
+        <section className="cf-hero" aria-labelledby="careers-hero-title">
+          <div className="cf-hero-copy cf-reveal">
+            <span className="cf-eyebrow">A career with purpose · Oceania Cruises</span>
+            <h1 id="careers-hero-title">Make the journey matter.</h1>
+            <p className="cf-hero-lede">
+              Bring your point of view to a team that believes hospitality is a way of paying attention — to guests, to craft, and to one another.
             </p>
-            <div className="hero-actions">
-              <button className="brass-button" data-testid="button-explore-hero" onClick={() => notify('Explore the autumn collection below.')}>
-                Explore voyages
+            <div className="cf-hero-actions">
+              <button className="cf-primary" type="button" onClick={() => scrollTo('apply-now')}>
+                Apply now <ArrowRight size={14} />
               </button>
-              <a className="text-link" href="#offers" data-testid="link-view-offers">View the edit <ArrowRight size={13} /></a>
-            </div>
-            <p className="hero-note">Educational recreation · imagery generated for this experience</p>
-          </div>
-        </section>
-
-        <section className="section offers-section" id="offers">
-          <div className="section-heading">
-            <div>
-              <span className="section-kicker">A little more time</span>
-              <h2>Featured offers</h2>
-            </div>
-            <p className="section-intro">Thoughtful ways to make a voyage linger — from a longer stay in port to a table set with local flavor.</p>
-          </div>
-          <div className="offer-grid">
-            {offers.map((offer) => (
-              <button
-                className="offer-card"
-                key={offer.id}
-                data-testid={`card-offer-${offer.id}`}
-                onClick={() => notify(`${offer.title} is part of the Oceania seasonal edit.`)}
-              >
-                <img className="offer-image" src={asset(offer.image)} alt="" />
-                <div className="offer-content">
-                  <span className="eyebrow">{offer.label}</span>
-                  <h3>{offer.title}</h3>
-                  <p>{offer.body}</p>
-                  <div className="card-arrow">Read the note <ArrowRight size={13} /></div>
-                </div>
+              <button className="cf-secondary" type="button" onClick={() => scrollTo('life-at-sea')}>
+                Meet the people
               </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="section journal-section" id="destinations">
-          <div className="section-heading">
-            <div>
-              <span className="section-kicker">The destination journal</span>
-              <h2>Stay curious.</h2>
             </div>
-            <p className="section-intro">A collection of places with enough character to reward a second look. Start anywhere.</p>
+            <p className="cf-hero-note">Shipboard · Shore operations · Culinary · Guest experience</p>
           </div>
-          <div className="destination-grid">
-            {destinations.map((place) => (
-              <button
-                className="destination-card"
-                key={place.id}
-                data-testid={`card-destination-${place.id}`}
-                onClick={() => {
-                  setDestination(place.title.split(' ')[0] === 'Japan' ? 'Asia & the Pacific' : place.title.includes('Fjord') ? 'Northern Europe' : 'The Mediterranean');
-                  notify(`Destination selected: ${place.title}.`);
-                }}
-              >
-                <img src={asset(place.image)} alt={place.title} />
-                <span className="destination-label">
-                  <small>{place.region}</small>
-                  <h3>{place.title}</h3>
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="section quote-section" id="journal">
-          <div>
-            <span className="section-kicker">Oceania point of view</span>
-            <h2>Room to notice.</h2>
-          </div>
-          <div>
-            <span className="quote-mark">“</span>
-            <p className="quote-text">The best voyages do not fill every minute. They leave a little space for the unexpected: a late light, a local bakery, a conversation that changes the shape of a day.</p>
-            <p className="quote-attribution">Our travel editors · 2025 field notes</p>
-          </div>
-        </section>
-
-        <section className="section newsletter" aria-label="Newsletter signup">
-          <div>
-            <span className="section-kicker">The slow dispatch</span>
-            <h2>Make room for somewhere new.</h2>
-            <p>Occasional destination notes, seasonal routes, and the quiet pleasures of going well. No pressure, just good reasons to look at a map.</p>
-          </div>
-          <form className="newsletter-form" onSubmit={handleNewsletter}>
-            <input
-              className="newsletter-input"
-              type="email"
-              placeholder="Your email address"
-              aria-label="Your email address"
-              value={email}
-              data-testid="input-newsletter-email"
-              onChange={(event) => setEmail(event.target.value)}
-            />
-            <button className="newsletter-submit" data-testid="button-newsletter-submit" type="submit">Keep me posted <ArrowRight size={14} /></button>
-          </form>
-          {newsletterMessage && <p className="newsletter-message" data-testid="text-newsletter-message">{newsletterMessage}</p>}
-        </section>
-
-        <section className="section careers-section" id="careers" aria-labelledby="careers-heading">
-          <div className="careers-intro">
-            <span className="section-kicker">A career with purpose</span>
-            <h2 id="careers-heading">Bring your curiosity aboard.</h2>
-            <p>
-              Great journeys are shaped by thoughtful people. Explore opportunities
-              across hospitality, culinary, guest experience, and life at sea.
-            </p>
-            <div className="role-list" aria-label="Open positions">
-              {[
-                { title: 'Guest Experience Host', team: 'Guest experience', location: 'At sea' },
-                { title: 'Executive Sous Chef', team: 'Culinary', location: 'At sea' },
-                { title: 'Voyage Planning Associate', team: 'Shore operations', location: 'Miami, FL' },
-              ].map((role) => (
-                <button
-                  className="role-card"
-                  type="button"
-                  key={role.title}
-                  onClick={() => notify(`${role.title} selected. Complete the application to be considered.`)}
-                >
-                  <span>
-                    <strong>{role.title}</strong>
-                    <small>{role.team} · {role.location}</small>
-                  </span>
-                  <ArrowRight size={16} aria-hidden="true" />
-                </button>
-              ))}
+          <div className="cf-hero-image" role="img" aria-label="A calm coastline at first light">
+            <div className="cf-hero-stamp">
+              <strong>{roles.length} open roles</strong>
+              <span>Across shipboard and shore teams · Updated this week</span>
             </div>
           </div>
-          <form className="application-panel" onSubmit={handleApplication}>
-            <span className="section-kicker">Apply now</span>
-            <h3>Tell us about yourself.</h3>
-            <label>
-              <span>Full name</span>
-              <input name="fullName" type="text" placeholder="Your full name" required />
-            </label>
-            <label>
-              <span>Email address</span>
-              <input name="email" type="email" placeholder="you@example.com" required />
-            </label>
-            <label>
-              <span>Position</span>
-              <select name="position" defaultValue="" required>
-                <option value="" disabled>Select a position</option>
-                <option>Guest Experience Host</option>
-                <option>Executive Sous Chef</option>
-                <option>Voyage Planning Associate</option>
+        </section>
+
+        <section className="cf-search" aria-label="Search open roles">
+          <div className="cf-search-row">
+            <div className="cf-field">
+              <label htmlFor="role-search">Search roles</label>
+              <input id="role-search" type="search" placeholder="Title, team, or keyword" value={keyword} onChange={(event) => setKeyword(event.target.value)} />
+            </div>
+            <div className="cf-field">
+              <label htmlFor="team-filter">Team</label>
+              <select id="team-filter" value={category} onChange={(event) => setCategory(event.target.value)}>
+                {teamOptions.map((team) => <option key={team}>{team}</option>)}
               </select>
-            </label>
-            <label>
-              <span>Resume</span>
-              <input name="resume" type="file" accept=".pdf,.doc,.docx" required />
-            </label>
-            <label>
-              <span>Short note</span>
-              <textarea name="note" placeholder="What would you bring to the journey?" rows={3} />
-            </label>
-            <button className="brass-button application-submit" type="submit" disabled={applicationSending} data-testid="button-apply">
-              {applicationSending ? 'Sending application…' : 'Submit application'} <ArrowRight size={14} />
+            </div>
+            <div className="cf-field">
+              <label htmlFor="location-filter">Location</label>
+              <select id="location-filter" value={location} onChange={(event) => setLocation(event.target.value)}>
+                <option>All locations</option>
+                <option>At sea</option>
+                <option>Miami, FL</option>
+              </select>
+            </div>
+            <button className="cf-filter-button" type="button" onClick={handleSearch}>
+              <Search size={13} /> Find roles
             </button>
-            {applicationMessage && <p className="application-message" role="status" data-testid="text-application-message">{applicationMessage}</p>}
+          </div>
+          <p className="cf-search-meta">{filteredRoles.length} of {roles.length} roles shown · New opportunities added regularly</p>
+        </section>
+
+        <section className="cf-section cf-vacancies" id="open-roles" aria-labelledby="open-roles-title">
+          <div className="cf-section-heading">
+            <div>
+              <span className="cf-kicker">Your next chapter</span>
+              <h2 id="open-roles-title">Open roles</h2>
+            </div>
+            <p className="cf-heading-copy">The work is varied. The standard is shared. Find the place where your experience can make a visible difference.</p>
+          </div>
+          <div className="cf-vacancy-layout">
+            <div className="cf-role-list" aria-label="Open positions">
+              {filteredRoles.length ? filteredRoles.map((role) => (
+                <button className={`cf-role ${activeRoleId === role.id ? 'is-selected' : ''}`} type="button" key={role.id} onClick={() => selectRole(role)} aria-pressed={activeRoleId === role.id}>
+                  <span>
+                    <span className="cf-role-top"><span>{role.tag}</span><i /></span>
+                    <strong className="cf-role-title">{role.title}</strong>
+                    <span className="cf-role-meta"><span>{role.team}</span><span>{role.location}</span><span>{role.schedule}</span></span>
+                  </span>
+                  <ArrowRight className="cf-role-arrow" size={17} aria-hidden="true" />
+                </button>
+              )) : (
+                <div className="cf-role" aria-live="polite">
+                  <span>
+                    <span className="cf-role-top"><span>Keep looking</span></span>
+                    <strong className="cf-role-title">No roles found</strong>
+                    <span className="cf-role-meta"><span>Try a broader search</span></span>
+                  </span>
+                  <Search className="cf-role-arrow" size={17} aria-hidden="true" />
+                </div>
+              )}
+            </div>
+            <aside className="cf-vacancy-aside">
+              <BriefcaseBusiness size={18} color="#d9bd8d" strokeWidth={1.3} aria-hidden="true" />
+              <h3>Ready when you are.</h3>
+              <p>{activeRole.summary}</p>
+              <div className="cf-aside-rule" />
+              <div className="cf-aside-stat"><strong>4</strong><span>disciplines hiring now</span></div>
+              <button className="cf-aside-link" type="button" onClick={() => scrollTo('apply-now')}>
+                Apply to {activeRole.title} <ArrowRight size={13} />
+              </button>
+            </aside>
+          </div>
+        </section>
+
+        <section className="cf-section cf-culture" id="life-at-sea" aria-labelledby="life-title">
+          <div className="cf-culture-art" role="img" aria-label="Blue water and distant shore">
+            <div className="cf-culture-label"><strong>Room to grow</strong><span>Built into the journey</span></div>
+          </div>
+          <div className="cf-culture-copy">
+            <span className="cf-kicker">More than a workplace</span>
+            <h2 id="life-title">Bring your whole self aboard.</h2>
+            <p>We are a collection of hosts, makers, navigators, and listeners. Some of us work at sea; some keep the shore team moving. What connects us is a shared belief that care is a craft, not a script.</p>
+            <div className="cf-principles" id="our-values">
+              <div className="cf-principle"><strong>Be present</strong><span>Notice what guests and teammates need next.</span></div>
+              <div className="cf-principle"><strong>Stay curious</strong><span>Keep learning from every port, plate, and person.</span></div>
+              <div className="cf-principle"><strong>Raise the bar</strong><span>Make thoughtful choices when no one is watching.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section className="cf-section cf-people" id="shore-teams" aria-labelledby="people-title">
+          <div className="cf-section-heading">
+            <div>
+              <span className="cf-kicker">The people behind the welcome</span>
+              <h2 id="people-title">Different roles.<br />One rhythm.</h2>
+            </div>
+            <p className="cf-heading-copy">A great guest experience is never the work of one department. It is the handoff between many good people.</p>
+          </div>
+          <div className="cf-people-grid">
+            <article className="cf-people-card"><img src={asset('destination-greece.jpg')} alt="" /><div className="cf-people-card-content"><small>Hospitality</small><h3>Make someone feel expected.</h3><p>Guest experience and hotel teams create the warmth guests remember long after the details blur.</p></div></article>
+            <article className="cf-people-card"><img src={asset('destination-japan.jpg')} alt="" /><div className="cf-people-card-content"><small>Culinary</small><h3>Let the ingredient speak.</h3><p>Our kitchens are built around respect for craft and the joy of a table well considered.</p></div></article>
+            <article className="cf-people-card"><img src={asset('destination-nordic.jpg')} alt="" /><div className="cf-people-card-content"><small>Operations</small><h3>Keep the promise moving.</h3><p>Onboard and ashore, steady teams make ambitious journeys feel effortless.</p></div></article>
+          </div>
+        </section>
+
+        <section className="cf-section cf-quote" aria-label="Team member quote">
+          <div><span className="cf-kicker">A note from the team</span><h2>The details<br />are the culture.</h2></div>
+          <div><span className="cf-quote-mark">“</span><p className="cf-quote-text">I came for the sea and stayed for the standard. People here notice the small things — and they notice when you are ready for more.</p><p className="cf-quote-attribution">Marisol R. · Guest Services Manager · 7 years with Oceania</p></div>
+        </section>
+
+        <section className="cf-section cf-apply" id="apply-now" aria-labelledby="apply-title">
+          <div className="cf-apply-copy">
+            <span className="cf-kicker">Start a conversation</span>
+            <h2 id="apply-title">A good next step is still a step.</h2>
+            <p>Share a little about yourself and the team will help find the right place to begin. You do not need to have every answer before you apply.</p>
+            <div className="cf-apply-detail"><span className="cf-detail-number">01</span><span className="cf-detail-copy"><strong>Tell us your story</strong><span>A few details are enough for this first hello.</span></span></div>
+            <div className="cf-apply-detail"><span className="cf-detail-number">02</span><span className="cf-detail-copy"><strong>Meet your future team</strong><span>We make space for a real conversation.</span></span></div>
+          </div>
+          <form className="cf-apply-form" onSubmit={handleApplication}>
+            <div className="cf-application-heading">
+              <div className="cf-application-logo" aria-label="Oceania Cruises">
+                <span className="cf-wordmark-main">Oceania</span>
+                <span className="cf-wordmark-sub">Cruises</span>
+              </div>
+              <span className="cf-kicker">Careers</span>
+              <h3>Application for Employment</h3>
+            </div>
+
+            <fieldset className="cf-form-fieldset" disabled={submitting || applicationSubmitted}>
+            <div className="cf-form-section">
+              <h4>Personal information</h4>
+              <div className="cf-form-grid">
+                <label className="cf-form-field"><span>First name</span><input name="firstName" type="text" placeholder="First name" required /></label>
+                <label className="cf-form-field"><span>Last name</span><input name="lastName" type="text" placeholder="Last name" required /></label>
+                <label className="cf-form-field"><span>Middle name</span><input name="middleName" type="text" placeholder="Middle name" /></label>
+                <label className="cf-form-field"><span>Position applying for</span><select name="position" value={activeRole.id} onChange={(event) => setActiveRoleId(event.target.value)} required>{roles.map((role) => <option value={role.id} key={role.id}>{role.title}</option>)}</select></label>
+                <label className="cf-form-field"><span>Email address</span><input name="email" type="email" placeholder="you@example.com" required /></label>
+                <label className="cf-form-field"><span>Phone number</span><input name="phone" type="tel" placeholder="+1 555 000 0000" required /></label>
+                <label className="cf-form-field"><span>Gender</span><input name="gender" type="text" placeholder="Optional" /></label>
+                <label className="cf-form-field"><span>Date of birth</span><input name="dateOfBirth" type="date" /></label>
+                <label className="cf-form-field"><span>Place of birth</span><input name="placeOfBirth" type="text" /></label>
+                <label className="cf-form-field"><span>Height</span><input name="height" type="text" placeholder="Optional" /></label>
+                <label className="cf-form-field"><span>Weight</span><input name="weight" type="text" placeholder="Optional" /></label>
+                <label className="cf-form-field"><span>Body complexion</span><input name="bodyComplexion" type="text" /></label>
+                <label className="cf-form-field"><span>Hair color</span><input name="hairColor" type="text" /></label>
+                <label className="cf-form-field"><span>Eye color</span><input name="eyeColor" type="text" /></label>
+                <label className="cf-form-field"><span>Nationality</span><input name="nationality" type="text" /></label>
+                <label className="cf-form-field"><span>Religion</span><input name="religion" type="text" /></label>
+                <label className="cf-form-field"><span>Language or dialect</span><input name="language" type="text" /></label>
+                <label className="cf-form-field full"><span>Address</span><input name="address" type="text" /></label>
+                <label className="cf-form-field"><span>City</span><input name="city" type="text" /></label>
+                <label className="cf-form-field"><span>Country</span><input name="country" type="text" /></label>
+                <label className="cf-form-field"><span>Postal code</span><input name="postalCode" type="text" /></label>
+                <label className="cf-form-field"><span>Home phone</span><input name="homePhone" type="tel" /></label>
+                <label className="cf-form-field"><span>Cell phone</span><input name="cellPhone" type="tel" /></label>
+              </div>
+            </div>
+
+            <div className="cf-form-section">
+              <h4>Emergency contact</h4>
+              <div className="cf-form-grid">
+                <label className="cf-form-field"><span>Person to contact</span><input name="emergencyName" type="text" /></label>
+                <label className="cf-form-field"><span>Contact number</span><input name="emergencyContactNumber" type="tel" /></label>
+                <label className="cf-form-field full"><span>Contact address</span><input name="emergencyContactAddress" type="text" /></label>
+              </div>
+            </div>
+
+            <div className="cf-form-section">
+              <h4>Educational background</h4>
+              <div className="cf-form-grid">
+                <label className="cf-form-field"><span>School name</span><input name="schoolName" type="text" /></label>
+                <label className="cf-form-field"><span>Location</span><input name="schoolLocation" type="text" /></label>
+                <label className="cf-form-field"><span>Year attended and years</span><input name="schoolYears" type="text" placeholder="Example: 2018–2022" /></label>
+              </div>
+            </div>
+
+            <div className="cf-form-section">
+              <h4>Occupation history</h4>
+              <div className="cf-form-grid">
+                <label className="cf-form-field"><span>Company</span><input name="company" type="text" /></label>
+                <label className="cf-form-field"><span>Organization</span><input name="organization" type="text" /></label>
+                <label className="cf-checkbox-row"><input name="selfEmployed" type="checkbox" /><span>Self-employed</span></label>
+                <label className="cf-form-field"><span>Employer</span><input name="employer" type="text" /></label>
+                <label className="cf-form-field"><span>Date employed</span><input name="dateEmployed" type="text" placeholder="From – to" /></label>
+                <label className="cf-form-field"><span>Work phone</span><input name="workPhone" type="tel" /></label>
+                <label className="cf-form-field"><span>Salary rate</span><input name="salaryRate" type="text" /></label>
+                <label className="cf-form-field"><span>Work address</span><input name="workAddress" type="text" /></label>
+                <label className="cf-form-field"><span>Work city</span><input name="workCity" type="text" /></label>
+                <label className="cf-form-field"><span>Province</span><input name="province" type="text" /></label>
+                <label className="cf-form-field"><span>Postal code</span><input name="workPostalCode" type="text" /></label>
+                <label className="cf-form-field"><span>Position</span><input name="positionHeld" type="text" /></label>
+                <label className="cf-form-field full"><span>Duty performed</span><textarea name="dutiesPerformed" rows={2} /></label>
+                <label className="cf-form-field"><span>Supervisor name and title</span><input name="supervisorNameTitle" type="text" /></label>
+                <label className="cf-form-field"><span>Reason for leaving</span><input name="reasonForLeaving" type="text" /></label>
+                <label className="cf-form-field"><span>May we contact them?</span><select name="mayContactEmployer" defaultValue=""><option value="">Select</option><option>Yes</option><option>No</option></select></label>
+              </div>
+            </div>
+
+            <div className="cf-form-section">
+              <h4>Reference</h4>
+              <div className="cf-form-grid">
+                <label className="cf-form-field"><span>Name</span><input name="referenceName" type="text" /></label>
+                <label className="cf-form-field"><span>Title</span><input name="referenceTitle" type="text" /></label>
+                <label className="cf-form-field"><span>Company</span><input name="referenceCompany" type="text" /></label>
+                <label className="cf-form-field"><span>Phone</span><input name="referencePhone" type="tel" /></label>
+              </div>
+            </div>
+
+            <div className="cf-form-section">
+              <h4>Supporting documents</h4>
+              <div className="cf-form-grid">
+                <label className="cf-form-field full"><span>Resume · PDF, DOC, or DOCX</span><input name="resume" type="file" accept=".pdf,.doc,.docx" /></label>
+                <label className="cf-form-field full"><span>Anything else you would like us to know</span><textarea name="note" placeholder="Share your experience, point of view, or what you are curious about." rows={3} /></label>
+              </div>
+            </div>
+
+            <div className="cf-form-section cf-acknowledgement">
+              <h4>Acknowledgement &amp; authorization</h4>
+              <p>I certify that all answers given here are true and complete to the best of my knowledge. I authorize investigation of all statements contained in this application as may be necessary in arriving at an employment decision. In the event of employment, I understand that false or misleading information given in my application or interview may result in discharge.</p>
+              <label className="cf-checkbox-row"><input name="acknowledgement" type="checkbox" /><span>I have read and understand this acknowledgement.</span></label>
+              <label className="cf-checkbox-row"><input name="authorizeInvestigation" type="checkbox" /><span>I authorize the investigation described above.</span></label>
+              <label className="cf-checkbox-row"><input name="truthfulness" type="checkbox" /><span>I confirm that the information I provide is complete and accurate.</span></label>
+            </div>
+
+            <button className="cf-primary cf-submit" type="submit" disabled={submitting || applicationSubmitted} data-testid="button-apply">{submitting ? 'Sending application…' : applicationSubmitted ? 'Application submitted' : 'Send my application'} <ArrowRight size={14} /></button>
+            </fieldset>
+            {formStatus && <p className="cf-form-status" role="status" data-testid="text-application-message">{formStatus}</p>}
           </form>
         </section>
       </main>
 
-      <footer className="footer">
-        <div className="footer-top">
-          <div className="footer-brand">Oceania Cruises<small>A fictional, educational recreation inspired by the language of luxury travel. Not affiliated with any cruise line.</small></div>
-          <FooterColumn title="Plan" links={['Find a voyage', 'Our ships', 'What to pack', 'Travel notes']} onLink={notify} />
-          <FooterColumn title="Explore" links={['Destinations', 'Life onboard', 'The journal', 'Seasonal offers']} onLink={notify} />
-          <FooterColumn title="Connect" links={['Guest access', 'Newsletter', 'Contact the studio', 'Privacy']} onLink={notify} />
+      <footer className="cf-footer">
+        <div className="cf-footer-top">
+          <div className="cf-footer-brand">Oceania Cruises<small>A fictional, educational recreation inspired by the language of luxury travel. Not affiliated with any cruise line.</small></div>
+          {footerGroups.map((group) => (
+            <div key={group.title}>
+              <h4>{group.title}</h4>
+              {group.links.map((link) => <button type="button" key={link} onClick={() => notify(`${link} is part of this presentation.`)}>{link}</button>)}
+            </div>
+          ))}
         </div>
-        <div className="footer-bottom">
-          <span>© 2025 Oceania Cruises · Educational recreation</span>
-          <span>Designed for curious travelers</span>
-        </div>
+        <div className="cf-footer-bottom"><span>© 2025 Oceania Cruises · Educational recreation</span><span><Check size={12} aria-hidden="true" /> Designed for people who care about the details</span></div>
       </footer>
-      {toast && <div className="toast-message" role="status" data-testid="status-toast">{toast}</div>}
-    </div>
-  );
-}
 
-function FooterColumn({ title, links, onLink }: { title: string; links: string[]; onLink: ToastSetter }) {
-  return (
-    <div>
-      <h4>{title}</h4>
-      {links.map((link) => (
-        <button className="footer-link" key={link} data-testid={`button-footer-${link.toLowerCase().replaceAll(' ', '-')}`} onClick={() => onLink(`${link} is part of this presentation.`)}>
-          {link}
-        </button>
-      ))}
+      {toast && <div className="cf-toast" role="status">{toast}</div>}
     </div>
   );
 }
