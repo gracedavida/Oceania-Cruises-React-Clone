@@ -1,19 +1,9 @@
-import { type FormEvent, type ReactNode, useMemo, useState } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import './careers-first.css';
+
+import { type FormEvent, useMemo, useState } from 'react';
 import { ArrowRight, BriefcaseBusiness, Check, Menu, Search, X } from 'lucide-react';
-import { submitCareerApplication, type CareerApplication } from '@workspace/api-client-react';
-import { ErrorBoundary } from '@/components/error-boundary';
-import { Toaster } from '@/components/ui/toaster';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import NotFound from '@/pages/not-found';
-import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 
-const queryClient = new QueryClient();
-const BASE_URL = import.meta.env.BASE_URL;
-const asset = (name: string) => `${BASE_URL}${name}`;
-const MAX_RESUME_SIZE = 8 * 1024 * 1024;
-
-type ToastSetter = (message: string) => void;
+const asset = (name: string) => `/__mockup/images/${name}`;
 
 type Role = {
   id: string;
@@ -87,42 +77,7 @@ const footerGroups = [
   { title: 'Connect', links: ['Candidate support', 'Accessibility', 'Privacy', 'Guest access'] },
 ];
 
-function readFileAsBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = typeof reader.result === 'string' ? reader.result : '';
-      const [, base64 = ''] = result.split(',', 2);
-      if (!base64) {
-        reject(new Error('Unable to read the resume.'));
-        return;
-      }
-      resolve(base64);
-    };
-    reader.onerror = () => reject(reader.error ?? new Error('Unable to read the resume.'));
-    reader.readAsDataURL(file);
-  });
-}
-
-function getResumeType(file: File): CareerApplication['resumeType'] | null {
-  const knownTypes: Record<string, CareerApplication['resumeType']> = {
-    'application/pdf': 'application/pdf',
-    'application/msword': 'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  };
-  if (file.type in knownTypes) return knownTypes[file.type];
-
-  const extension = file.name.split('.').pop()?.toLowerCase();
-  if (extension === 'pdf') return 'application/pdf';
-  if (extension === 'doc') return 'application/msword';
-  if (extension === 'docx') {
-    return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-  }
-  return null;
-}
-
-function Home() {
+export function CareersFirst() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeRoleId, setActiveRoleId] = useState(roles[0].id);
   const [keyword, setKeyword] = useState('');
@@ -143,7 +98,7 @@ function Home() {
     });
   }, [category, keyword, location]);
 
-  const notify: ToastSetter = (message) => {
+  const notify = (message: string) => {
     setToast(message);
     window.setTimeout(() => setToast(''), 3200);
   };
@@ -168,45 +123,12 @@ function Home() {
     const form = event.currentTarget;
     const formData = new FormData(form);
     const name = String(formData.get('fullName') ?? '').trim();
-    const resume = formData.get('resume');
-
-    if (!(resume instanceof File) || resume.size === 0) {
-      setFormStatus('Please attach a PDF, DOC, or DOCX resume.');
-      return;
-    }
-    if (resume.size > MAX_RESUME_SIZE) {
-      setFormStatus('Please keep your resume under 8 MB.');
-      return;
-    }
-
-    const resumeType = getResumeType(resume);
-    if (!resumeType) {
-      setFormStatus('Please attach a PDF, DOC, or DOCX resume.');
-      return;
-    }
-
     setSubmitting(true);
-    setFormStatus('Sending your application securely…');
-
-    try {
-      const application: CareerApplication = {
-        fullName: name,
-        email: String(formData.get('email') ?? '').trim(),
-        position: activeRole.title,
-        note: String(formData.get('note') ?? '').trim(),
-        resumeName: resume.name,
-        resumeType,
-        resumeData: await readFileAsBase64(resume),
-        resumeSize: resume.size,
-      };
-      await submitCareerApplication(application);
-      setFormStatus(`Thank you${name ? `, ${name}` : ''}. Your application was emailed for review.`);
-      form.reset();
-    } catch {
-      setFormStatus('We could not send your application right now. Please try again shortly.');
-    } finally {
-      setSubmitting(false);
-    }
+    setFormStatus('Preparing your application…');
+    await new Promise((resolve) => window.setTimeout(resolve, 450));
+    setFormStatus(`Thank you${name ? `, ${name}` : ''}. Your interest in ${activeRole.title} has been recorded for this presentation.`);
+    form.reset();
+    setSubmitting(false);
   };
 
   return (
@@ -276,7 +198,13 @@ function Home() {
           <div className="cf-search-row">
             <div className="cf-field">
               <label htmlFor="role-search">Search roles</label>
-              <input id="role-search" type="search" placeholder="Title, team, or keyword" value={keyword} onChange={(event) => setKeyword(event.target.value)} />
+              <input
+                id="role-search"
+                type="search"
+                placeholder="Title, team, or keyword"
+                value={keyword}
+                onChange={(event) => setKeyword(event.target.value)}
+              />
             </div>
             <div className="cf-field">
               <label htmlFor="team-filter">Team</label>
@@ -309,12 +237,20 @@ function Home() {
               <span className="cf-kicker">Your next chapter</span>
               <h2 id="open-roles-title">Open roles</h2>
             </div>
-            <p className="cf-heading-copy">The work is varied. The standard is shared. Find the place where your experience can make a visible difference.</p>
+            <p className="cf-heading-copy">
+              The work is varied. The standard is shared. Find the place where your experience can make a visible difference.
+            </p>
           </div>
           <div className="cf-vacancy-layout">
             <div className="cf-role-list" aria-label="Open positions">
               {filteredRoles.length ? filteredRoles.map((role) => (
-                <button className={`cf-role ${activeRoleId === role.id ? 'is-selected' : ''}`} type="button" key={role.id} onClick={() => selectRole(role)} aria-pressed={activeRoleId === role.id}>
+                <button
+                  className={`cf-role ${activeRoleId === role.id ? 'is-selected' : ''}`}
+                  type="button"
+                  key={role.id}
+                  onClick={() => selectRole(role)}
+                  aria-pressed={activeRoleId === role.id}
+                >
                   <span>
                     <span className="cf-role-top"><span>{role.tag}</span><i /></span>
                     <strong className="cf-role-title">{role.title}</strong>
@@ -336,7 +272,7 @@ function Home() {
             <aside className="cf-vacancy-aside">
               <BriefcaseBusiness size={18} color="#d9bd8d" strokeWidth={1.3} aria-hidden="true" />
               <h3>Ready when you are.</h3>
-              <p>{activeRole.summary}</p>
+              <p>Choose a role that feels like a good fit, then tell us how you would help us make the everyday extraordinary.</p>
               <div className="cf-aside-rule" />
               <div className="cf-aside-stat"><strong>4</strong><span>disciplines hiring now</span></div>
               <button className="cf-aside-link" type="button" onClick={() => scrollTo('apply-now')}>
@@ -348,12 +284,17 @@ function Home() {
 
         <section className="cf-section cf-culture" id="life-at-sea" aria-labelledby="life-title">
           <div className="cf-culture-art" role="img" aria-label="Blue water and distant shore">
-            <div className="cf-culture-label"><strong>Room to grow</strong><span>Built into the journey</span></div>
+            <div className="cf-culture-label">
+              <strong>Room to grow</strong>
+              <span>Built into the journey</span>
+            </div>
           </div>
           <div className="cf-culture-copy">
             <span className="cf-kicker">More than a workplace</span>
             <h2 id="life-title">Bring your whole self aboard.</h2>
-            <p>We are a collection of hosts, makers, navigators, and listeners. Some of us work at sea; some keep the shore team moving. What connects us is a shared belief that care is a craft, not a script.</p>
+            <p>
+              We are a collection of hosts, makers, navigators, and listeners. Some of us work at sea; some keep the shore team moving. What connects us is a shared belief that care is a craft, not a script.
+            </p>
             <div className="cf-principles" id="our-values">
               <div className="cf-principle"><strong>Be present</strong><span>Notice what guests and teammates need next.</span></div>
               <div className="cf-principle"><strong>Stay curious</strong><span>Keep learning from every port, plate, and person.</span></div>
@@ -371,15 +312,43 @@ function Home() {
             <p className="cf-heading-copy">A great guest experience is never the work of one department. It is the handoff between many good people.</p>
           </div>
           <div className="cf-people-grid">
-            <article className="cf-people-card"><img src={asset('destination-greece.jpg')} alt="" /><div className="cf-people-card-content"><small>Hospitality</small><h3>Make someone feel expected.</h3><p>Guest experience and hotel teams create the warmth guests remember long after the details blur.</p></div></article>
-            <article className="cf-people-card"><img src={asset('destination-japan.jpg')} alt="" /><div className="cf-people-card-content"><small>Culinary</small><h3>Let the ingredient speak.</h3><p>Our kitchens are built around respect for craft and the joy of a table well considered.</p></div></article>
-            <article className="cf-people-card"><img src={asset('destination-nordic.jpg')} alt="" /><div className="cf-people-card-content"><small>Operations</small><h3>Keep the promise moving.</h3><p>Onboard and ashore, steady teams make ambitious journeys feel effortless.</p></div></article>
+            <article className="cf-people-card">
+              <img src={asset('destination-greece.jpg')} alt="" />
+              <div className="cf-people-card-content">
+                <small>Hospitality</small>
+                <h3>Make someone feel expected.</h3>
+                <p>Guest experience and hotel teams create the warmth guests remember long after the details blur.</p>
+              </div>
+            </article>
+            <article className="cf-people-card">
+              <img src={asset('destination-japan.jpg')} alt="" />
+              <div className="cf-people-card-content">
+                <small>Culinary</small>
+                <h3>Let the ingredient speak.</h3>
+                <p>Our kitchens are built around respect for craft and the joy of a table well considered.</p>
+              </div>
+            </article>
+            <article className="cf-people-card">
+              <img src={asset('destination-nordic.jpg')} alt="" />
+              <div className="cf-people-card-content">
+                <small>Operations</small>
+                <h3>Keep the promise moving.</h3>
+                <p>Onboard and ashore, steady teams make ambitious journeys feel effortless.</p>
+              </div>
+            </article>
           </div>
         </section>
 
         <section className="cf-section cf-quote" aria-label="Team member quote">
-          <div><span className="cf-kicker">A note from the team</span><h2>The details<br />are the culture.</h2></div>
-          <div><span className="cf-quote-mark">“</span><p className="cf-quote-text">I came for the sea and stayed for the standard. People here notice the small things — and they notice when you are ready for more.</p><p className="cf-quote-attribution">Marisol R. · Guest Services Manager · 7 years with Oceania</p></div>
+          <div>
+            <span className="cf-kicker">A note from the team</span>
+            <h2>The details<br />are the culture.</h2>
+          </div>
+          <div>
+            <span className="cf-quote-mark">“</span>
+            <p className="cf-quote-text">I came for the sea and stayed for the standard. People here notice the small things — and they notice when you are ready for more.</p>
+            <p className="cf-quote-attribution">Marisol R. · Guest Services Manager · 7 years with Oceania</p>
+          </div>
         </section>
 
         <section className="cf-section cf-apply" id="apply-now" aria-labelledby="apply-title">
@@ -387,70 +356,68 @@ function Home() {
             <span className="cf-kicker">Start a conversation</span>
             <h2 id="apply-title">A good next step is still a step.</h2>
             <p>Share a little about yourself and the team will help find the right place to begin. You do not need to have every answer before you apply.</p>
-            <div className="cf-apply-detail"><span className="cf-detail-number">01</span><span className="cf-detail-copy"><strong>Tell us your story</strong><span>A few details are enough for this first hello.</span></span></div>
-            <div className="cf-apply-detail"><span className="cf-detail-number">02</span><span className="cf-detail-copy"><strong>Meet your future team</strong><span>We make space for a real conversation.</span></span></div>
+            <div className="cf-apply-detail">
+              <span className="cf-detail-number">01</span>
+              <span className="cf-detail-copy"><strong>Tell us your story</strong><span>A few details are enough for this first hello.</span></span>
+            </div>
+            <div className="cf-apply-detail">
+              <span className="cf-detail-number">02</span>
+              <span className="cf-detail-copy"><strong>Meet your future team</strong><span>We make space for a real conversation.</span></span>
+            </div>
           </div>
           <form className="cf-apply-form" onSubmit={handleApplication}>
             <span className="cf-kicker">Apply now</span>
             <h3>Put your name in the room.</h3>
             <div className="cf-form-grid">
-              <label className="cf-form-field"><span>Full name</span><input name="fullName" type="text" placeholder="Your full name" required /></label>
-              <label className="cf-form-field"><span>Email address</span><input name="email" type="email" placeholder="you@example.com" required /></label>
-              <label className="cf-form-field full"><span>Role of interest</span><select name="position" value={activeRole.id} onChange={(event) => setActiveRoleId(event.target.value)}>{roles.map((role) => <option value={role.id} key={role.id}>{role.title}</option>)}</select></label>
-              <label className="cf-form-field full"><span>Resume · PDF, DOC, or DOCX</span><input name="resume" type="file" accept=".pdf,.doc,.docx" required /></label>
-              <label className="cf-form-field full"><span>What would you bring?</span><textarea name="note" placeholder="A sentence or two about your experience, point of view, or what you are curious about." rows={3} /></label>
+              <label className="cf-form-field">
+                <span>Full name</span>
+                <input name="fullName" type="text" placeholder="Your full name" required />
+              </label>
+              <label className="cf-form-field">
+                <span>Email address</span>
+                <input name="email" type="email" placeholder="you@example.com" required />
+              </label>
+              <label className="cf-form-field full">
+                <span>Role of interest</span>
+                <select name="position" value={activeRole.id} onChange={(event) => setActiveRoleId(event.target.value)}>
+                  {roles.map((role) => <option value={role.id} key={role.id}>{role.title}</option>)}
+                </select>
+              </label>
+              <label className="cf-form-field full">
+                <span>What would you bring?</span>
+                <textarea name="note" placeholder="A sentence or two about your experience, point of view, or what you are curious about." />
+              </label>
             </div>
-            <button className="cf-primary cf-submit" type="submit" disabled={submitting} data-testid="button-apply">{submitting ? 'Sending application…' : 'Send my application'} <ArrowRight size={14} /></button>
-            {formStatus && <p className="cf-form-status" role="status" data-testid="text-application-message">{formStatus}</p>}
+            <button className="cf-primary cf-submit" type="submit" disabled={submitting}>
+              {submitting ? 'Preparing application…' : 'Send my interest'} <ArrowRight size={14} />
+            </button>
+            {formStatus && <p className="cf-form-status" role="status">{formStatus}</p>}
           </form>
         </section>
       </main>
 
       <footer className="cf-footer">
         <div className="cf-footer-top">
-          <div className="cf-footer-brand">Oceania Cruises<small>A fictional, educational recreation inspired by the language of luxury travel. Not affiliated with any cruise line.</small></div>
+          <div className="cf-footer-brand">
+            Oceania Cruises
+            <small>A fictional, educational recreation inspired by the language of luxury travel. Not affiliated with any cruise line.</small>
+          </div>
           {footerGroups.map((group) => (
             <div key={group.title}>
               <h4>{group.title}</h4>
-              {group.links.map((link) => <button type="button" key={link} onClick={() => notify(`${link} is part of this presentation.`)}>{link}</button>)}
+              {group.links.map((link) => (
+                <button type="button" key={link} onClick={() => notify(`${link} is part of this presentation.`)}>{link}</button>
+              ))}
             </div>
           ))}
         </div>
-        <div className="cf-footer-bottom"><span>© 2025 Oceania Cruises · Educational recreation</span><span><Check size={12} aria-hidden="true" /> Designed for people who care about the details</span></div>
+        <div className="cf-footer-bottom">
+          <span>© 2025 Oceania Cruises · Educational recreation</span>
+          <span><Check size={12} aria-hidden="true" /> Designed for people who care about the details</span>
+        </div>
       </footer>
 
       {toast && <div className="cf-toast" role="status">{toast}</div>}
     </div>
   );
 }
-
-function Router() {
-  return (
-    <RoutedErrorBoundary>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route component={NotFound} />
-      </Switch>
-    </RoutedErrorBoundary>
-  );
-}
-
-function RoutedErrorBoundary({ children }: { children: ReactNode }) {
-  const [location] = useLocation();
-  return <ErrorBoundary resetKey={location}>{children}</ErrorBoundary>;
-}
-
-function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <WouterRouter base={BASE_URL.replace(/\/$/, '')}>
-          <Router />
-        </WouterRouter>
-        <Toaster />
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
-}
-
-export default App;
