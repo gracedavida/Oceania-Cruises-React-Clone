@@ -1,46 +1,35 @@
-import { ReplitConnectors } from "@replit/connectors-sdk";
+import { Resend } from "resend";
 import type { CareerApplication } from "@workspace/api-zod";
 
-const hiringInbox = "Oceaniacruisesapplication@protonmail.com";
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+const hiringInbox =
+  process.env.HIRING_INBOX || "Oceaniacruisesapplication@protonmail.com";
+
+const senderEmail = process.env.EMAIL_FROM || "onboarding@resend.dev";
 
 function sanitizeHeaderValue(value: string): string {
   return value.replace(/[\r\n"]/g, " ").trim();
 }
 
-function wrapBase64(value: string): string {
-  return value.match(/.{1,76}/g)?.join("\r\n") ?? value;
-}
-
-function encodeBase64Url(value: string): string {
-  return Buffer.from(value, "utf8")
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/g, "");
-}
-
-function buildApplicationMessage(
-  application: CareerApplication,
-  sender: string,
-): string {
-  const boundary = `----=_OceaniaApplication_${crypto.randomUUID()}`;
-  const safeName = sanitizeHeaderValue(application.fullName);
-  const safePosition = sanitizeHeaderValue(application.position);
-  const safeResumeName = application.resumeName
-    ? sanitizeHeaderValue(application.resumeName)
-    : "";
+function buildApplicationText(application: CareerApplication): string {
   let additionalDetails = "(No additional application details provided)";
+
   if (application.applicationDetails?.trim()) {
     try {
-      const parsedDetails = JSON.parse(application.applicationDetails) as Record<string, string>;
+      const parsedDetails = JSON.parse(
+        application.applicationDetails,
+      ) as Record<string, string>;
+
       additionalDetails = Object.entries(parsedDetails)
         .map(([label, value]) => `${label}: ${value}`)
-        .join("\r\n");
+        .join("\n");
     } catch {
       additionalDetails = application.applicationDetails.trim();
     }
   }
-  const body = [
+
+  return [
     "A new career application was submitted through the Oceania Cruises educational recreation.",
     "",
     `Applicant: ${application.fullName}`,
@@ -53,82 +42,38 @@ function buildApplicationMessage(
     "",
     "Additional application details:",
     additionalDetails,
-  ].join("\r\n");
-
-  const headers = [
-    `From: Oceania Cruises Careers <${sender}>`,
-    `To: ${hiringInbox}`,
-    `Reply-To: ${sanitizeHeaderValue(application.email)}`,
-    `Subject: New application — ${safePosition} — ${safeName}`,
-    "MIME-Version: 1.0",
-  ];
-
-  if (
-    application.resumeName &&
-    application.resumeType &&
-    application.resumeData &&
-    application.resumeSize
-  ) {
-    headers.push(`Content-Type: multipart/mixed; boundary="${boundary}"`);
-    const message = [
-      `--${boundary}`,
-      "Content-Type: text/plain; charset=UTF-8",
-      "Content-Transfer-Encoding: 8bit",
-      "",
-      body,
-      "",
-      `--${boundary}`,
-      `Content-Type: ${application.resumeType}; name="${safeResumeName}"`,
-      "Content-Transfer-Encoding: base64",
-      `Content-Disposition: attachment; filename="${safeResumeName}"`,
-      "",
-      wrapBase64(application.resumeData),
-      "",
-      `--${boundary}--`,
-      "",
-    ].join("\r\n");
-    return `${headers.join("\r\n")}\r\n\r\n${message}`;
-  }
-
-  headers.push("Content-Type: text/plain; charset=UTF-8");
-  headers.push("Content-Transfer-Encoding: 8bit");
-  return `${headers.join("\r\n")}\r\n\r\n${body}\r\n`;
+  ].join("\n");
 }
 
 export async function sendCareerApplication(
   application: CareerApplication,
 ): Promise<void> {
-  const connectors = new ReplitConnectors();
-  const profileResponse = await connectors.proxy(
-    "google-mail",
-    "/gmail/v1/users/me/profile",
-    { method: "GET" },
-  );
-
-  if (!profileResponse.ok) {
-    throw new Error(`Gmail profile request failed with ${profileResponse.status}`);
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not configured");
   }
 
-  const profile = (await profileResponse.json()) as { emailAddress?: string };
-  if (!profile.emailAddress) {
-    throw new Error("Gmail profile did not include a sender address");
-  }
+  const text = buildApplicationText(application);
 
-  const message = buildApplicationMessage(application, profile.emailAddress);
-  const sendResponse = await connectors.proxy(
-    "google-mail",
-    "/gmail/v1/users/me/messages/send",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ raw: encodeBase64Url(message) }),
-    },
-  );
+  const attachments =
+    application.resumeName && application.resumeType && application.resumeData
+      ? [
+          {
+            filename: sanitizeHeaderValue(application.resumeName),
+            content: Buffer.from(application.resumeData, "base64"),
+          },
+        ]
+      : undefined;
 
-  if (!sendResponse.ok) {
-    const details = (await sendResponse.text()).slice(0, 300);
-    throw new Error(
-      `Gmail send request failed with ${sendResponse.status}: ${details}`,
-    );
+  const { error } = await resend.emails.send({
+    from: `Oceania Cruises Careers <${senderEmail}>`,
+    to: [hiringInbox],
+    replyTo: sanitizeHeaderValue(application.email),
+    subject: `New application — ${sanitizeHeaderValue(application.position)} — ${sanitizeHeaderValue(application.fullName)}`,
+    text,
+    attachments,
+  });
+
+  if (error) {
+    throw new Error(`Resend email failed: ${error.message}`);
   }
 }
