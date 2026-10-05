@@ -1,6 +1,6 @@
-import './_group.css';
-import { type CSSProperties, type FormEvent, useState } from 'react';
-import { ArrowRight, Bell, Menu, X } from 'lucide-react';
+import "./_group.css";
+import { type CSSProperties, type FormEvent, useState } from "react";
+import { ArrowRight, Bell, Menu, X } from "lucide-react";
 const asset = (name: string) => `/__mockup/images/${name}`;
 
 type ToastSetter = (message: string) => void;
@@ -8,116 +8,133 @@ const MAX_RESUME_SIZE = 8 * 1024 * 1024;
 
 function getResumeType(file: File): string | null {
   const knownTypes: Record<string, string> = {
-    'application/pdf': 'application/pdf',
-    'application/msword': 'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    "application/pdf": "application/pdf",
+    "application/msword": "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   };
   if (file.type in knownTypes) {
     return knownTypes[file.type];
   }
 
-  const extension = file.name.split('.').pop()?.toLowerCase();
-  if (extension === 'pdf') return 'application/pdf';
-  if (extension === 'doc') return 'application/msword';
-  if (extension === 'docx') {
-    return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+  const extension = file.name.split(".").pop()?.toLowerCase();
+  if (extension === "pdf") return "application/pdf";
+  if (extension === "doc") return "application/msword";
+  if (extension === "docx") {
+    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
   }
   return null;
 }
 
 const offers = [
   {
-    id: 'coastal-edit',
-    label: 'The seasonal edit',
-    title: 'The coast, considered',
-    body: 'Sunlit harbors, old stone, and days that ask nothing of you.',
-    image: 'hero-coast.jpg',
+    id: "coastal-edit",
+    label: "The seasonal edit",
+    title: "The coast, considered",
+    body: "Sunlit harbors, old stone, and days that ask nothing of you.",
+    image: "hero-coast.jpg",
   },
   {
-    id: 'grand-voyage',
-    label: 'Longer stays',
-    title: 'Take the long way',
-    body: 'A slower rhythm across three distinct seas.',
-    image: 'destination-nordic.jpg',
+    id: "grand-voyage",
+    label: "Longer stays",
+    title: "Take the long way",
+    body: "A slower rhythm across three distinct seas.",
+    image: "destination-nordic.jpg",
   },
   {
-    id: 'culinary',
-    label: 'At the table',
-    title: 'A taste of place',
-    body: 'Markets, kitchens, and the stories between them.',
-    image: 'destination-greece.jpg',
+    id: "culinary",
+    label: "At the table",
+    title: "A taste of place",
+    body: "Markets, kitchens, and the stories between them.",
+    image: "destination-greece.jpg",
   },
 ];
 
 const destinations = [
-  { id: 'japan', region: 'Asia & the Pacific', title: 'Japan in bloom', image: 'destination-japan.jpg' },
-  { id: 'nordic', region: 'Northern Europe', title: 'Fjords in soft light', image: 'destination-nordic.jpg' },
-  { id: 'aegean', region: 'The Mediterranean', title: 'Aegean blue', image: 'destination-greece.jpg' },
+  {
+    id: "japan",
+    region: "Asia & the Pacific",
+    title: "Japan in bloom",
+    image: "destination-japan.jpg",
+  },
+  {
+    id: "nordic",
+    region: "Northern Europe",
+    title: "Fjords in soft light",
+    image: "destination-nordic.jpg",
+  },
+  {
+    id: "aegean",
+    region: "The Mediterranean",
+    title: "Aegean blue",
+    image: "destination-greece.jpg",
+  },
 ];
 
 export function Current() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [destination, setDestination] = useState('Everywhere');
-  const [month, setMonth] = useState('Any month');
-  const [toast, setToast] = useState('');
-  const [email, setEmail] = useState('');
-  const [newsletterMessage, setNewsletterMessage] = useState('');
-  const [applicationMessage, setApplicationMessage] = useState('');
+  const [destination, setDestination] = useState("Everywhere");
+  const [month, setMonth] = useState("Any month");
+  const [toast, setToast] = useState("");
+  const [email, setEmail] = useState("");
+  const [newsletterMessage, setNewsletterMessage] = useState("");
+  const [applicationMessage, setApplicationMessage] = useState("");
   const [applicationSending, setApplicationSending] = useState(false);
 
   const notify: ToastSetter = (message) => {
     setToast(message);
-    window.setTimeout(() => setToast(''), 3200);
+    window.setTimeout(() => setToast(""), 3200);
   };
 
   const handleFind = () => {
     notify(
-      destination === 'Everywhere' && month === 'Any month'
-        ? 'Showing our full collection of voyages.'
+      destination === "Everywhere" && month === "Any month"
+        ? "Showing our full collection of voyages."
         : `Curating voyages to ${destination} for ${month.toLowerCase()}.`,
     );
   };
 
   const handleNewsletter = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!email.includes('@')) {
-      setNewsletterMessage('Please enter a valid email address.');
+    if (!email.includes("@")) {
+      setNewsletterMessage("Please enter a valid email address.");
       return;
     }
-    setNewsletterMessage('You’re on the list. A little inspiration is on its way.');
-    setEmail('');
+    setNewsletterMessage(
+      "You’re on the list. A little inspiration is on its way.",
+    );
+    setEmail("");
   };
 
   const handleApplication = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const applicantName = String(formData.get('fullName') ?? '').trim();
-    const resume = formData.get('resume');
+    const applicantName = String(formData.get("fullName") ?? "").trim();
+    const resume = formData.get("resume");
 
     if (!(resume instanceof File) || resume.size === 0) {
-      setApplicationMessage('Please attach a PDF, DOC, or DOCX resume.');
+      setApplicationMessage("Please attach a PDF, DOC, or DOCX resume.");
       return;
     }
     if (resume.size > MAX_RESUME_SIZE) {
-      setApplicationMessage('Please keep your resume under 8 MB.');
+      setApplicationMessage("Please keep your resume under 8 MB.");
       return;
     }
 
     const resumeType = getResumeType(resume);
     if (!resumeType) {
-      setApplicationMessage('Please attach a PDF, DOC, or DOCX resume.');
+      setApplicationMessage("Please attach a PDF, DOC, or DOCX resume.");
       return;
     }
 
     setApplicationSending(true);
-    setApplicationMessage('Sending your application securely…');
+    setApplicationMessage("Sending your application securely…");
 
     // The extracted mockup intentionally does not submit to the production API.
     await new Promise((resolve) => window.setTimeout(resolve, 350));
     setApplicationMessage(
-      `Thank you${applicantName ? `, ${applicantName}` : ''}. Your application is ready for review.`,
+      `Thank you${applicantName ? `, ${applicantName}` : ""}. Your application is ready for review.`,
     );
     form.reset();
     setApplicationSending(false);
@@ -128,18 +145,19 @@ export function Current() {
       className="page-shell min-h-screen"
       style={
         {
-          '--hero-image': `url("${asset('hero-coast.jpg')}")`,
+          "--hero-image": `url("${asset("hero-coast.jpg")}")`,
         } as CSSProperties
       }
     >
       <div className="utility-bar">
-        <span className="utility-link">An independent educational recreation</span>
         <div className="utility-right">
           <span>Voyage notes, sent slowly</span>
           <button
             className="utility-link"
             data-testid="button-sign-in"
-            onClick={() => notify('Guest access is for this presentation only.')}
+            onClick={() =>
+              notify("Guest access is for this presentation only.")
+            }
           >
             Guest access
           </button>
@@ -150,33 +168,49 @@ export function Current() {
       <header className="wordmark-header">
         <button
           className="menu-toggle"
-          aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
+          aria-label={menuOpen ? "Close navigation" : "Open navigation"}
           data-testid="button-mobile-menu"
           onClick={() => setMenuOpen((open) => !open)}
         >
-          {menuOpen ? <X size={22} strokeWidth={1.25} /> : <Menu size={22} strokeWidth={1.25} />}
+          {menuOpen ? (
+            <X size={22} strokeWidth={1.25} />
+          ) : (
+            <Menu size={22} strokeWidth={1.25} />
+          )}
         </button>
         <a href="#top" className="wordmark" data-testid="link-home">
-          <span className="wordmark-main"><span className="wordmark-mark">⌁</span>Oceania</span>
+          <span className="wordmark-main">
+            <span className="wordmark-mark">⌁</span>Oceania
+          </span>
           <span className="wordmark-sub">Cruises</span>
         </a>
       </header>
 
-      <nav className={`nav-bar ${menuOpen ? 'open' : ''}`} aria-label="Main navigation">
-        {['Plan your voyage', 'Destinations', 'Life onboard', 'Seasonal offers', 'Our point of view', 'Careers'].map((item) => (
+      <nav
+        className={`nav-bar ${menuOpen ? "open" : ""}`}
+        aria-label="Main navigation"
+      >
+        {[
+          "Plan your voyage",
+          "Destinations",
+          "Life onboard",
+          "Seasonal offers",
+          "Our point of view",
+          "Careers",
+        ].map((item) => (
           <a
             href={
-              item === 'Destinations'
-                ? '#destinations'
-                : item === 'Seasonal offers'
-                  ? '#offers'
-                  : item === 'Careers'
-                    ? '#careers'
-                    : '#journal'
+              item === "Destinations"
+                ? "#destinations"
+                : item === "Seasonal offers"
+                  ? "#offers"
+                  : item === "Careers"
+                    ? "#careers"
+                    : "#journal"
             }
             className="nav-link"
             key={item}
-            data-testid={`link-nav-${item.toLowerCase().replaceAll(' ', '-')}`}
+            data-testid={`link-nav-${item.toLowerCase().replaceAll(" ", "-")}`}
             onClick={() => setMenuOpen(false)}
           >
             {item}
@@ -219,10 +253,20 @@ export function Current() {
               </select>
             </label>
             <div>
-              <button className="find-button" data-testid="button-find-cruise" onClick={handleFind}>
+              <button
+                className="find-button"
+                data-testid="button-find-cruise"
+                onClick={handleFind}
+              >
                 Find a voyage
               </button>
-              <button className="advanced-search" data-testid="button-advanced-search" onClick={() => notify('Advanced planning opens after your first selection.')}>
+              <button
+                className="advanced-search"
+                data-testid="button-advanced-search"
+                onClick={() =>
+                  notify("Advanced planning opens after your first selection.")
+                }
+              >
                 Advanced search
               </button>
             </div>
@@ -231,18 +275,33 @@ export function Current() {
 
         <section className="hero" aria-label="Featured voyage">
           <div className="hero-content reveal">
-            <span className="eyebrow">Oceania, in season · September to November</span>
+            <span className="eyebrow">
+              Oceania, in season · September to November
+            </span>
             <h1>Go where the light is.</h1>
             <p className="hero-copy">
-              Intimate ships. Unhurried days. A considered way to see the coastlines that stay with you.
+              Intimate ships. Unhurried days. A considered way to see the
+              coastlines that stay with you.
             </p>
             <div className="hero-actions">
-              <button className="brass-button" data-testid="button-explore-hero" onClick={() => notify('Explore the autumn collection below.')}>
+              <button
+                className="brass-button"
+                data-testid="button-explore-hero"
+                onClick={() => notify("Explore the autumn collection below.")}
+              >
                 Explore voyages
               </button>
-              <a className="text-link" href="#offers" data-testid="link-view-offers">View the edit <ArrowRight size={13} /></a>
+              <a
+                className="text-link"
+                href="#offers"
+                data-testid="link-view-offers"
+              >
+                View the edit <ArrowRight size={13} />
+              </a>
             </div>
-            <p className="hero-note">Educational recreation · imagery generated for this experience</p>
+            <p className="hero-note">
+              Educational recreation · imagery generated for this experience
+            </p>
           </div>
         </section>
 
@@ -252,7 +311,10 @@ export function Current() {
               <span className="section-kicker">A little more time</span>
               <h2>Featured offers</h2>
             </div>
-            <p className="section-intro">Thoughtful ways to make a voyage linger — from a longer stay in port to a table set with local flavor.</p>
+            <p className="section-intro">
+              Thoughtful ways to make a voyage linger — from a longer stay in
+              port to a table set with local flavor.
+            </p>
           </div>
           <div className="offer-grid">
             {offers.map((offer) => (
@@ -260,14 +322,18 @@ export function Current() {
                 className="offer-card"
                 key={offer.id}
                 data-testid={`card-offer-${offer.id}`}
-                onClick={() => notify(`${offer.title} is part of the Oceania seasonal edit.`)}
+                onClick={() =>
+                  notify(`${offer.title} is part of the Oceania seasonal edit.`)
+                }
               >
                 <img className="offer-image" src={asset(offer.image)} alt="" />
                 <div className="offer-content">
                   <span className="eyebrow">{offer.label}</span>
                   <h3>{offer.title}</h3>
                   <p>{offer.body}</p>
-                  <div className="card-arrow">Read the note <ArrowRight size={13} /></div>
+                  <div className="card-arrow">
+                    Read the note <ArrowRight size={13} />
+                  </div>
                 </div>
               </button>
             ))}
@@ -280,7 +346,10 @@ export function Current() {
               <span className="section-kicker">The destination journal</span>
               <h2>Stay curious.</h2>
             </div>
-            <p className="section-intro">A collection of places with enough character to reward a second look. Start anywhere.</p>
+            <p className="section-intro">
+              A collection of places with enough character to reward a second
+              look. Start anywhere.
+            </p>
           </div>
           <div className="destination-grid">
             {destinations.map((place) => (
@@ -289,7 +358,13 @@ export function Current() {
                 key={place.id}
                 data-testid={`card-destination-${place.id}`}
                 onClick={() => {
-                  setDestination(place.title.split(' ')[0] === 'Japan' ? 'Asia & the Pacific' : place.title.includes('Fjord') ? 'Northern Europe' : 'The Mediterranean');
+                  setDestination(
+                    place.title.split(" ")[0] === "Japan"
+                      ? "Asia & the Pacific"
+                      : place.title.includes("Fjord")
+                        ? "Northern Europe"
+                        : "The Mediterranean",
+                  );
                   notify(`Destination selected: ${place.title}.`);
                 }}
               >
@@ -310,8 +385,14 @@ export function Current() {
           </div>
           <div>
             <span className="quote-mark">“</span>
-            <p className="quote-text">The best voyages do not fill every minute. They leave a little space for the unexpected: a late light, a local bakery, a conversation that changes the shape of a day.</p>
-            <p className="quote-attribution">Our travel editors · 2025 field notes</p>
+            <p className="quote-text">
+              The best voyages do not fill every minute. They leave a little
+              space for the unexpected: a late light, a local bakery, a
+              conversation that changes the shape of a day.
+            </p>
+            <p className="quote-attribution">
+              Our travel editors · 2025 field notes
+            </p>
           </div>
         </section>
 
@@ -319,7 +400,11 @@ export function Current() {
           <div>
             <span className="section-kicker">The slow dispatch</span>
             <h2>Make room for somewhere new.</h2>
-            <p>Occasional destination notes, seasonal routes, and the quiet pleasures of going well. No pressure, just good reasons to look at a map.</p>
+            <p>
+              Occasional destination notes, seasonal routes, and the quiet
+              pleasures of going well. No pressure, just good reasons to look at
+              a map.
+            </p>
           </div>
           <form className="newsletter-form" onSubmit={handleNewsletter}>
             <input
@@ -331,34 +416,70 @@ export function Current() {
               data-testid="input-newsletter-email"
               onChange={(event) => setEmail(event.target.value)}
             />
-            <button className="newsletter-submit" data-testid="button-newsletter-submit" type="submit">Keep me posted <ArrowRight size={14} /></button>
+            <button
+              className="newsletter-submit"
+              data-testid="button-newsletter-submit"
+              type="submit"
+            >
+              Keep me posted <ArrowRight size={14} />
+            </button>
           </form>
-          {newsletterMessage && <p className="newsletter-message" data-testid="text-newsletter-message">{newsletterMessage}</p>}
+          {newsletterMessage && (
+            <p
+              className="newsletter-message"
+              data-testid="text-newsletter-message"
+            >
+              {newsletterMessage}
+            </p>
+          )}
         </section>
 
-        <section className="section careers-section" id="careers" aria-labelledby="careers-heading">
+        <section
+          className="section careers-section"
+          id="careers"
+          aria-labelledby="careers-heading"
+        >
           <div className="careers-intro">
             <span className="section-kicker">A career with purpose</span>
             <h2 id="careers-heading">Bring your curiosity aboard.</h2>
             <p>
-              Great journeys are shaped by thoughtful people. Explore opportunities
-              across hospitality, culinary, guest experience, and life at sea.
+              Great journeys are shaped by thoughtful people. Explore
+              opportunities across hospitality, culinary, guest experience, and
+              life at sea.
             </p>
             <div className="role-list" aria-label="Open positions">
               {[
-                { title: 'Guest Experience Host', team: 'Guest experience', location: 'At sea' },
-                { title: 'Executive Sous Chef', team: 'Culinary', location: 'At sea' },
-                { title: 'Voyage Planning Associate', team: 'Shore operations', location: 'Miami, FL' },
+                {
+                  title: "Guest Experience Host",
+                  team: "Guest experience",
+                  location: "At sea",
+                },
+                {
+                  title: "Executive Sous Chef",
+                  team: "Culinary",
+                  location: "At sea",
+                },
+                {
+                  title: "Voyage Planning Associate",
+                  team: "Shore operations",
+                  location: "Miami, FL",
+                },
               ].map((role) => (
                 <button
                   className="role-card"
                   type="button"
                   key={role.title}
-                  onClick={() => notify(`${role.title} selected. Complete the application to be considered.`)}
+                  onClick={() =>
+                    notify(
+                      `${role.title} selected. Complete the application to be considered.`,
+                    )
+                  }
                 >
                   <span>
                     <strong>{role.title}</strong>
-                    <small>{role.team} · {role.location}</small>
+                    <small>
+                      {role.team} · {role.location}
+                    </small>
                   </span>
                   <ArrowRight size={16} aria-hidden="true" />
                 </button>
@@ -370,16 +491,28 @@ export function Current() {
             <h3>Tell us about yourself.</h3>
             <label>
               <span>Full name</span>
-              <input name="fullName" type="text" placeholder="Your full name" required />
+              <input
+                name="fullName"
+                type="text"
+                placeholder="Your full name"
+                required
+              />
             </label>
             <label>
               <span>Email address</span>
-              <input name="email" type="email" placeholder="you@example.com" required />
+              <input
+                name="email"
+                type="email"
+                placeholder="you@example.com"
+                required
+              />
             </label>
             <label>
               <span>Position</span>
               <select name="position" defaultValue="" required>
-                <option value="" disabled>Select a position</option>
+                <option value="" disabled>
+                  Select a position
+                </option>
                 <option>Guest Experience Host</option>
                 <option>Executive Sous Chef</option>
                 <option>Voyage Planning Associate</option>
@@ -387,43 +520,119 @@ export function Current() {
             </label>
             <label>
               <span>Resume</span>
-              <input name="resume" type="file" accept=".pdf,.doc,.docx" required />
+              <input
+                name="resume"
+                type="file"
+                accept=".pdf,.doc,.docx"
+                required
+              />
             </label>
             <label>
               <span>Short note</span>
-              <textarea name="note" placeholder="What would you bring to the journey?" rows={3} />
+              <textarea
+                name="note"
+                placeholder="What would you bring to the journey?"
+                rows={3}
+              />
             </label>
-            <button className="brass-button application-submit" type="submit" disabled={applicationSending} data-testid="button-apply">
-              {applicationSending ? 'Sending application…' : 'Submit application'} <ArrowRight size={14} />
+            <button
+              className="brass-button application-submit"
+              type="submit"
+              disabled={applicationSending}
+              data-testid="button-apply"
+            >
+              {applicationSending
+                ? "Sending application…"
+                : "Submit application"}{" "}
+              <ArrowRight size={14} />
             </button>
-            {applicationMessage && <p className="application-message" role="status" data-testid="text-application-message">{applicationMessage}</p>}
+            {applicationMessage && (
+              <p
+                className="application-message"
+                role="status"
+                data-testid="text-application-message"
+              >
+                {applicationMessage}
+              </p>
+            )}
           </form>
         </section>
       </main>
 
       <footer className="footer">
         <div className="footer-top">
-          <div className="footer-brand">Oceania Cruises<small>A fictional, educational recreation inspired by the language of luxury travel. Not affiliated with any cruise line.</small></div>
-          <FooterColumn title="Plan" links={['Find a voyage', 'Our ships', 'What to pack', 'Travel notes']} onLink={notify} />
-          <FooterColumn title="Explore" links={['Destinations', 'Life onboard', 'The journal', 'Seasonal offers']} onLink={notify} />
-          <FooterColumn title="Connect" links={['Guest access', 'Newsletter', 'Contact the studio', 'Privacy']} onLink={notify} />
+          <div className="footer-brand">
+            Oceania Cruises
+            <small>
+              A frictional site designed to help users explore available job
+              opportunities and submit application for postions that match their
+              skilland experience.
+            </small>
+          </div>
+          <FooterColumn
+            title="Plan"
+            links={[
+              "Find a voyage",
+              "Our ships",
+              "What to pack",
+              "Travel notes",
+            ]}
+            onLink={notify}
+          />
+          <FooterColumn
+            title="Explore"
+            links={[
+              "Destinations",
+              "Life onboard",
+              "The journal",
+              "Seasonal offers",
+            ]}
+            onLink={notify}
+          />
+          <FooterColumn
+            title="Connect"
+            links={[
+              "Guest access",
+              "Newsletter",
+              "Contact the studio",
+              "Privacy",
+            ]}
+            onLink={notify}
+          />
         </div>
         <div className="footer-bottom">
           <span>© 2025 Oceania Cruises · Educational recreation</span>
           <span>Designed for curious travelers</span>
         </div>
       </footer>
-      {toast && <div className="toast-message" role="status" data-testid="status-toast">{toast}</div>}
+      {toast && (
+        <div className="toast-message" role="status" data-testid="status-toast">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
 
-function FooterColumn({ title, links, onLink }: { title: string; links: string[]; onLink: ToastSetter }) {
+function FooterColumn({
+  title,
+  links,
+  onLink,
+}: {
+  title: string;
+  links: string[];
+  onLink: ToastSetter;
+}) {
   return (
     <div>
       <h4>{title}</h4>
       {links.map((link) => (
-        <button className="footer-link" key={link} data-testid={`button-footer-${link.toLowerCase().replaceAll(' ', '-')}`} onClick={() => onLink(`${link} is part of this presentation.`)}>
+        <button
+          className="footer-link"
+          key={link}
+          data-testid={`button-footer-${link.toLowerCase().replaceAll(" ", "-")}`}
+          onClick={() => onLink(`${link} is part of this presentation.`)}
+        >
           {link}
         </button>
       ))}
