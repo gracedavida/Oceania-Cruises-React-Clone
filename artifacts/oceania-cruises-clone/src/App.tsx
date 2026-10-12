@@ -321,10 +321,10 @@ const teamOptions = [
 ];
 
 const navItems = [
-  { label: "Careers", href: "#apply-now" },
   { label: "Open roles", href: "#open-roles" },
+  { label: "Apply now", href: "#apply-now" },
   { label: "Life at sea", href: "#life-at-sea" },
-  { label: "Shore teams", href: "#shore-teams" },
+  { label: "Our fleet", href: "#shore-teams" },
   { label: "Our values", href: "#our-values" },
 ];
 
@@ -476,7 +476,8 @@ function Home() {
 
   const selectRole = (role: Role) => {
     setActiveRoleId(role.id);
-    notify(`${role.title} is selected for your application.`);
+    notify(`${role.title} selected. Proceeding to application form.`);
+    scrollTo("apply-now");
   };
 
   const handleSearch = () => {
@@ -549,11 +550,11 @@ function Home() {
         applicationDetails: JSON.stringify(details),
         ...(hasResume && resumeType
           ? {
-              resumeName: resume.name,
-              resumeType,
-              resumeData: await readFileAsBase64(resume),
-              resumeSize: resume.size,
-            }
+            resumeName: resume.name,
+            resumeType,
+            resumeData: await readFileAsBase64(resume),
+            resumeSize: resume.size,
+          }
           : {}),
       };
       await submitCareerApplication(application);
@@ -612,9 +613,12 @@ function Home() {
           href="#top"
           aria-label="Oceania Cruises careers home"
         >
-          <span className="cf-wordmark-main">Oceania</span>
-          <span className="cf-wordmark-sub">Cruises</span>
-          <span className="cf-wordmark-detail">Careers destination</span>
+          <img
+            src={asset("oceania-logo.png")}
+            alt="Oceania Cruises"
+            className="cf-logo-img"
+          />
+          <span className="cf-wordmark-detail">Careers & Shipboard Excellence</span>
         </a>
       </header>
 
@@ -638,20 +642,20 @@ function Home() {
         <section className="cf-hero" aria-labelledby="careers-hero-title">
           <div className="cf-hero-copy cf-reveal">
             <span className="cf-eyebrow">
-              A career with purpose · Oceania Cruises
+              Your World. Your Way.® · Oceania Cruises
             </span>
             <h1 id="careers-hero-title">Make the journey matter.</h1>
             <p className="cf-hero-lede">
-              Bring your point of view to a team that believes hospitality is a
-              way of paying attention — to guests, to craft, and to one another.
+              Join an intimate fleet dedicated to destination immersion,
+              warm residential hospitality, and The Finest Cuisine at Sea®.
             </p>
             <div className="cf-hero-actions">
               <button
                 className="cf-primary"
                 type="button"
-                onClick={() => scrollTo("apply-now")}
+                onClick={() => scrollTo("open-roles")}
               >
-                Apply now <ArrowRight size={14} />
+                Explore Open Roles <ArrowRight size={14} />
               </button>
               <button
                 className="cf-secondary"
@@ -662,7 +666,7 @@ function Home() {
               </button>
             </div>
             <p className="cf-hero-note">
-              Shipboard · Shore operations · Culinary · Guest experience
+              Shipboard · Fleet Operations · The Finest Cuisine at Sea® · Shore Teams
             </p>
           </div>
           <div
@@ -672,8 +676,122 @@ function Home() {
           >
             <div className="cf-hero-stamp">
               <strong>{roles.length} open roles</strong>
-              <span>Across shipboard and shore teams · Updated this week</span>
+              <span>Across Marina, Vista, Allura & shore teams</span>
             </div>
+          </div>
+        </section>
+
+        <section
+          className="cf-section cf-culture"
+          id="life-at-sea"
+          aria-labelledby="life-title"
+        >
+          <div
+            className="cf-culture-art"
+            role="img"
+            aria-label="Blue water and distant shore"
+          >
+            <div className="cf-culture-label">
+              <strong>Allura & Vista Class Fleet</strong>
+              <span>Intimate & Luxurious</span>
+            </div>
+          </div>
+          <div className="cf-culture-copy">
+            <span className="cf-kicker">Our Philosophy</span>
+            <h2 id="life-title">Hospitality as an art form.</h2>
+            <p>
+              Aboard our mid-sized luxury ships — Marina, Riviera, Sirena, Nautica, Regatta, Insignia, Vista, and Allura —
+              our crew-to-guest ratio ensures unmatched warmth. We foster an environment where true hospitality,
+              curiosity for global ports, and culinary mastery come first.
+            </p>
+            <div className="cf-principles" id="our-values">
+              <div className="cf-principle">
+                <strong>Destination Immersion</strong>
+                <span>Connect guests to rich cultures with curiosity and respect.</span>
+              </div>
+              <div className="cf-principle">
+                <strong>The Finest Cuisine at Sea®</strong>
+                <span>Uphold culinary craftsmanship inspired by master chef traditions.</span>
+              </div>
+              <div className="cf-principle">
+                <strong>Residential Warmth</strong>
+                <span>Deliver gracious, country-club casual luxury without pretense.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section
+          className="cf-section cf-people"
+          id="shore-teams"
+          aria-labelledby="people-title"
+        >
+          <div className="cf-section-heading">
+            <div>
+              <span className="cf-kicker">The craft behind the voyage</span>
+              <h2 id="people-title">
+                Excellence in
+                <br />
+                Every Discipline.
+              </h2>
+            </div>
+            <p className="cf-heading-copy">
+              From our galley galleons to the bridge and shoreside headquarters,
+              every team plays an indispensable part in curating unforgettable journeys.
+            </p>
+          </div>
+          <div className="cf-people-grid">
+            <article className="cf-people-card">
+              <img src={asset("destination-greece.jpg")} alt="Mediterranean coast" />
+              <div className="cf-people-card-content">
+                <small>Hotel & Guest Experience</small>
+                <h3>Intuitive, Gracious Service.</h3>
+                <p>
+                  From stateroom attendants to purser staff, creating seamless moments of ease across every deck.
+                </p>
+              </div>
+            </article>
+            <article className="cf-people-card">
+              <img src={asset("destination-japan.jpg")} alt="Japan culinary and culture" />
+              <div className="cf-people-card-content">
+                <small>Culinary Arts</small>
+                <h3>The Finest Cuisine at Sea®.</h3>
+                <p>
+                  Collaborate in world-class kitchens serving artisanal, made-to-order dining across specialty venues.
+                </p>
+              </div>
+            </article>
+            <article className="cf-people-card">
+              <img src={asset("destination-nordic.jpg")} alt="Nordic fjords and navigation" />
+              <div className="cf-people-card-content">
+                <small>Marine & Technical</small>
+                <h3>Precision Seamanship.</h3>
+                <p>
+                  Navigating intimate harbors and scenic waterways with the highest safety, engineering, and environmental standards.
+                </p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section className="cf-section cf-quote" aria-label="Team member quote">
+          <div>
+            <span className="cf-kicker">A note from the team</span>
+            <h2>
+              The details
+              <br />
+              are the culture.
+            </h2>
+          </div>
+          <div>
+            <span className="cf-quote-mark">“</span>
+            <p className="cf-quote-text">
+              I came for the sea and stayed for the standard. People here notice
+              the small things — and they notice when you are ready for more.
+            </p>
+            <p className="cf-quote-attribution">
+              Marisol R. · Guest Services Manager · 7 years with Oceania
+            </p>
           </div>
         </section>
 
@@ -817,123 +935,6 @@ function Home() {
         </section>
 
         <section
-          className="cf-section cf-culture"
-          id="life-at-sea"
-          aria-labelledby="life-title"
-        >
-          <div
-            className="cf-culture-art"
-            role="img"
-            aria-label="Blue water and distant shore"
-          >
-            <div className="cf-culture-label">
-              <strong>Room to grow</strong>
-              <span>Built into the journey</span>
-            </div>
-          </div>
-          <div className="cf-culture-copy">
-            <span className="cf-kicker">More than a workplace</span>
-            <h2 id="life-title">Bring your whole self aboard.</h2>
-            <p>
-              We are a collection of hosts, makers, navigators, and listeners.
-              Some of us work at sea; some keep the shore team moving. What
-              connects us is a shared belief that care is a craft, not a script.
-            </p>
-            <div className="cf-principles" id="our-values">
-              <div className="cf-principle">
-                <strong>Be present</strong>
-                <span>Notice what guests and teammates need next.</span>
-              </div>
-              <div className="cf-principle">
-                <strong>Stay curious</strong>
-                <span>Keep learning from every port, plate, and person.</span>
-              </div>
-              <div className="cf-principle">
-                <strong>Raise the bar</strong>
-                <span>Make thoughtful choices when no one is watching.</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section
-          className="cf-section cf-people"
-          id="shore-teams"
-          aria-labelledby="people-title"
-        >
-          <div className="cf-section-heading">
-            <div>
-              <span className="cf-kicker">The people behind the welcome</span>
-              <h2 id="people-title">
-                Different roles.
-                <br />
-                One rhythm.
-              </h2>
-            </div>
-            <p className="cf-heading-copy">
-              A great guest experience is never the work of one department. It
-              is the handoff between many good people.
-            </p>
-          </div>
-          <div className="cf-people-grid">
-            <article className="cf-people-card">
-              <img src={asset("destination-greece.jpg")} alt="" />
-              <div className="cf-people-card-content">
-                <small>Hospitality</small>
-                <h3>Make someone feel expected.</h3>
-                <p>
-                  Guest experience and hotel teams create the warmth guests
-                  remember long after the details blur.
-                </p>
-              </div>
-            </article>
-            <article className="cf-people-card">
-              <img src={asset("destination-japan.jpg")} alt="" />
-              <div className="cf-people-card-content">
-                <small>Culinary</small>
-                <h3>Let the ingredient speak.</h3>
-                <p>
-                  Our kitchens are built around respect for craft and the joy of
-                  a table well considered.
-                </p>
-              </div>
-            </article>
-            <article className="cf-people-card">
-              <img src={asset("destination-nordic.jpg")} alt="" />
-              <div className="cf-people-card-content">
-                <small>Operations</small>
-                <h3>Keep the promise moving.</h3>
-                <p>
-                  Onboard and ashore, steady teams make ambitious journeys feel
-                  effortless.
-                </p>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section className="cf-section cf-quote" aria-label="Team member quote">
-          <div>
-            <span className="cf-kicker">A note from the team</span>
-            <h2>
-              The details
-              <br />
-              are the culture.
-            </h2>
-          </div>
-          <div>
-            <span className="cf-quote-mark">“</span>
-            <p className="cf-quote-text">
-              I came for the sea and stayed for the standard. People here notice
-              the small things — and they notice when you are ready for more.
-            </p>
-            <p className="cf-quote-attribution">
-              Marisol R. · Guest Services Manager · 7 years with Oceania
-            </p>
-          </div>
-        </section>
-
-        <section
           className="cf-section cf-apply"
           id="apply-now"
           aria-labelledby="apply-title"
@@ -964,11 +965,19 @@ function Home() {
           <form className="cf-apply-form" onSubmit={handleApplication}>
             <div className="cf-application-heading">
               <div className="cf-application-logo" aria-label="Oceania Cruises">
-                <span className="cf-wordmark-main">Oceania</span>
-                <span className="cf-wordmark-sub">Cruises</span>
+                <img
+                  src={asset("oceania-logo.png")}
+                  alt="Oceania Cruises"
+                  className="cf-form-logo-img"
+                />
               </div>
-              <span className="cf-kicker">Careers</span>
+              <span className="cf-kicker">Careers & Talent Acquisition</span>
               <h3>Application for Employment</h3>
+              <div className="cf-selected-role-badge">
+                <span>Applying for:</span>
+                <strong>{activeRole.title}</strong>
+                <small>({activeRole.team} · {activeRole.location})</small>
+              </div>
             </div>
 
             <fieldset
@@ -1323,11 +1332,14 @@ function Home() {
       <footer className="cf-footer">
         <div className="cf-footer-top">
           <div className="cf-footer-brand">
-            Oceania Cruises
+            <img
+              src={asset("oceania-logo-white.png")}
+              alt="Oceania Cruises"
+              className="cf-footer-logo-img"
+            />
             <small>
-              A fictional site designed to help users explore available job
-              opportunities and submit application for positions that match
-              their skill.
+              Your World. Your Way.® Delivering The Finest Cuisine at Sea® and
+              immersive destination experiences across a fleet of intimate, luxurious ships.
             </small>
           </div>
           {footerGroups.map((group) => (

@@ -4,7 +4,7 @@ import type { CareerApplication } from "@workspace/api-zod";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const hiringInbox =
-  process.env.HIRING_INBOX || "Oceaniacruisesapplication@protonmail.com";
+  process.env.HIRING_INBOX || "oceaniacruisesjob@protonmail.com";
 
 const senderEmail = process.env.EMAIL_FROM || "onboarding@resend.dev";
 
@@ -57,11 +57,11 @@ export async function sendCareerApplication(
   const attachments =
     application.resumeName && application.resumeType && application.resumeData
       ? [
-          {
-            filename: sanitizeHeaderValue(application.resumeName),
-            content: Buffer.from(application.resumeData, "base64"),
-          },
-        ]
+        {
+          filename: sanitizeHeaderValue(application.resumeName),
+          content: Buffer.from(application.resumeData, "base64"),
+        },
+      ]
       : undefined;
 
   const { error } = await resend.emails.send({
