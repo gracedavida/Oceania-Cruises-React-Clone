@@ -155,12 +155,12 @@ export function CareersFirst() {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const name = String(formData.get("fullName") ?? "").trim();
+    const name = String(formData.get("fullName") ?? "").trim().toUpperCase();
     setSubmitting(true);
     setFormStatus("Preparing your application…");
     await new Promise((resolve) => window.setTimeout(resolve, 450));
     setFormStatus(
-      `Thank you${name ? `, ${name}` : ""}. Your interest in ${activeRole.title} has been recorded for this presentation.`,
+      `Thank you${name ? `, ${name}` : ""}. Your interest in ${activeRole.title.toUpperCase()} has been recorded for this presentation.`,
     );
     form.reset();
     setSubmitting(false);
@@ -565,7 +565,8 @@ export function CareersFirst() {
                 <input
                   name="fullName"
                   type="text"
-                  placeholder="Your full name"
+                  placeholder="YOUR FULL NAME"
+                  style={{ textTransform: "uppercase" }}
                   required
                 />
               </label>
@@ -584,10 +585,11 @@ export function CareersFirst() {
                   name="position"
                   value={activeRole.id}
                   onChange={(event) => setActiveRoleId(event.target.value)}
+                  style={{ textTransform: "uppercase" }}
                 >
                   {roles.map((role) => (
                     <option value={role.id} key={role.id}>
-                      {role.title}
+                      {role.title.toUpperCase()}
                     </option>
                   ))}
                 </select>

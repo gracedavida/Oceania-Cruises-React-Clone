@@ -555,6 +555,20 @@ a { color: inherit; text-decoration: none; }
 .cf-form-field.full { grid-column: 1 / -1; }
 .cf-form-field span { display: block; margin-bottom: 7px; color: #557078; font: 9px var(--app-font-mono); letter-spacing: .1em; text-transform: uppercase; }
 .cf-form-field input, .cf-form-field select, .cf-form-field textarea { width: 100%; border: 0; border-bottom: 1px solid #aabdbc; border-radius: 0; outline: 0; padding: 9px 0; background: transparent; color: var(--navy); font-size: 12px; }
+.cf-form-field input.uppercase,
+.cf-form-field select.uppercase,
+.cf-form-field input[name="firstName"],
+.cf-form-field input[name="lastName"],
+.cf-form-field input[name="middleName"],
+.cf-form-field select[name="position"] {
+  text-transform: uppercase;
+}
+.cf-form-field input.uppercase::placeholder,
+.cf-form-field input[name="firstName"]::placeholder,
+.cf-form-field input[name="lastName"]::placeholder,
+.cf-form-field input[name="middleName"]::placeholder {
+  text-transform: uppercase;
+}
 .cf-form-field input[type="file"] { padding: 8px 0; font-size: 11px; }
 .cf-form-field textarea { min-height: 70px; resize: vertical; }
 .cf-form-field input:focus, .cf-form-field select:focus, .cf-form-field textarea:focus { border-color: var(--brass); }
