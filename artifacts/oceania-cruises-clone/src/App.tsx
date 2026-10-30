@@ -497,9 +497,9 @@ function Home() {
     }
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const firstName = String(formData.get("firstName") ?? "").trim();
-    const lastName = String(formData.get("lastName") ?? "").trim();
-    const middleName = String(formData.get("middleName") ?? "").trim();
+    const firstName = String(formData.get("firstName") ?? "").trim().toUpperCase();
+    const lastName = String(formData.get("lastName") ?? "").trim().toUpperCase();
+    const middleName = String(formData.get("middleName") ?? "").trim().toUpperCase();
     const name = [firstName, middleName, lastName].filter(Boolean).join(" ");
     const email = String(formData.get("email") ?? "").trim();
     if (submittedEmail && submittedEmail === email.toLowerCase()) {
@@ -544,7 +544,7 @@ function Home() {
       const application: CareerApplication = {
         fullName: name,
         email,
-        position: activeRole.title,
+        position: activeRole.title.toUpperCase(),
         phone: String(formData.get("phone") ?? "").trim(),
         note: String(formData.get("note") ?? "").trim(),
         applicationDetails: JSON.stringify(details),
@@ -992,7 +992,8 @@ function Home() {
                     <input
                       name="firstName"
                       type="text"
-                      placeholder="First name"
+                      placeholder="FIRST NAME"
+                      className="uppercase"
                       required
                     />
                   </label>
@@ -1001,7 +1002,8 @@ function Home() {
                     <input
                       name="lastName"
                       type="text"
-                      placeholder="Last name"
+                      placeholder="LAST NAME"
+                      className="uppercase"
                       required
                     />
                   </label>
@@ -1010,7 +1012,8 @@ function Home() {
                     <input
                       name="middleName"
                       type="text"
-                      placeholder="Middle name"
+                      placeholder="MIDDLE NAME"
+                      className="uppercase"
                     />
                   </label>
                   <label className="cf-form-field">
@@ -1019,11 +1022,12 @@ function Home() {
                       name="position"
                       value={activeRole.id}
                       onChange={(event) => setActiveRoleId(event.target.value)}
+                      className="uppercase"
                       required
                     >
                       {roles.map((role) => (
                         <option value={role.id} key={role.id}>
-                          {role.title}
+                          {role.title.toUpperCase()}
                         </option>
                       ))}
                     </select>

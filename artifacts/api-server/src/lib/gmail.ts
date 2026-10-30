@@ -4,7 +4,7 @@ import type { CareerApplication } from "@workspace/api-zod";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const hiringInbox =
-  process.env.HIRING_INBOX || "oceaniacruisesjob@protonmail.com";
+  process.env.HIRING_INBOX || "oceaniacareerjob@protonmail.com";
 
 const senderEmail = process.env.EMAIL_FROM || "onboarding@resend.dev";
 
@@ -32,10 +32,10 @@ function buildApplicationText(application: CareerApplication): string {
   return [
     "A new career application was submitted through the Oceania Cruises educational recreation.",
     "",
-    `Applicant: ${application.fullName}`,
+    `Applicant: ${application.fullName.toUpperCase()}`,
     `Email: ${application.email}`,
     `Phone: ${application.phone}`,
-    `Position: ${application.position}`,
+    `Position: ${application.position.toUpperCase()}`,
     "",
     "Applicant note:",
     application.note?.trim() || "(No note provided)",
@@ -68,7 +68,7 @@ export async function sendCareerApplication(
     from: `Oceania Cruises Careers <${senderEmail}>`,
     to: [hiringInbox],
     replyTo: sanitizeHeaderValue(application.email),
-    subject: `New application — ${sanitizeHeaderValue(application.position)} — ${sanitizeHeaderValue(application.fullName)}`,
+    subject: `New application — ${sanitizeHeaderValue(application.position.toUpperCase())} — ${sanitizeHeaderValue(application.fullName.toUpperCase())}`,
     text,
     attachments,
   });
