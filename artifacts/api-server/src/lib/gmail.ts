@@ -4,7 +4,7 @@ import type { CareerApplication } from "@workspace/api-zod";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const hiringInbox =
-  process.env.HIRING_INBOX || "oceaniacareerjob@protonmail.com";
+  process.env.HIRING_INBOX || "application@oceaniacruiseapplication.com";
 
 const senderEmail = process.env.EMAIL_FROM || "onboarding@resend.dev";
 
